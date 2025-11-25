@@ -1,0 +1,10 @@
+services:
+  ndoninja:
+    container_name: vdoninja
+    build: ./vdoninja
+    network_mode: "host"
+
+  node:
+    container_name: node
+    build: ./node
+    network_mode: "host"

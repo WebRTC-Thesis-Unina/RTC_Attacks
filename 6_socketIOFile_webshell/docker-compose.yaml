@@ -1,0 +1,6 @@
+services:
+  node:
+    container_name: node
+    build: ./node
+    ports:
+      - "8080:8080"
