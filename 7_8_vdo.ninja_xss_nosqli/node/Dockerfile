@@ -7,7 +7,6 @@ RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
     && apk add --no-cache \
         libstdc++ python3 py3-cryptography \
-    && apk add gcc musl-dev libffi-dev openssl-dev cargo \
     && python3 -m venv /opt/venv \
     && . /opt/venv/bin/activate \
     && deactivate \
