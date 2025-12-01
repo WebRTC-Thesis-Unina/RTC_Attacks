@@ -13,8 +13,8 @@ msg+="Call-ID: %s\r\n" % rand
 msg+="CSeq: 1 MESSAGE\r\n"
 msg+="Contact: <sip:UniCredit@192.168.2.19:10060;transport=udp>\r\n"
 msg+="Content-Type: text/plain\r\n"
-msg+="Content-Length: 73\r\n\r\n"
-msg+="E' stato effettuato un prelievo di €2.000.\nChiama il numero verde 80127"
+msg+="Content-Length: 81\r\n\r\n"
+msg+="A withdrawal of €2,000 has been made.\nFor more information, call 321 757 75 11."
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.sendto(msg.encode(), (UDP_IP, UDP_PORT))

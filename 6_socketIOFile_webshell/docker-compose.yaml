@@ -2,5 +2,6 @@ services:
   node:
     container_name: node
     build: ./node
-    ports:
-      - "8080:8080"
+    tty: true
+    command: ["node", "node/server.js"]
+    network_mode: "host"

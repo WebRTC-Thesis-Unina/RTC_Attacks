@@ -21,7 +21,11 @@ services:
 
   node:
     container_name: node
-    build: ./node
+    image: node:iron-trixie-slim
+    tty: true
+    volumes:
+      - ./node:/node:ro
+    command: ["node", "node/server.js"]
     networks:
       server_network:
         ipv4_address: 203.0.113.3

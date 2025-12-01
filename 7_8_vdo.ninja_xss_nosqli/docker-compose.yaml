@@ -6,5 +6,9 @@ services:
 
   node:
     container_name: node
-    build: ./node
+    image: node:iron-trixie-slim
+    tty: true
+    volumes:
+      - ./node:/node:ro
+    command: ["node", "node/server.js"]
     network_mode: "host"

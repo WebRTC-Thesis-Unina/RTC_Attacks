@@ -5,7 +5,7 @@ const SocketIOFile = require('socket.io-file');
 const path = require('path');
 
 const app = express();
-app.use(express.static('public'));
+app.use(express.static('node/public'));
 
 app.get('/:filename', (req, res) => {
   const filename = req.params.filename;
