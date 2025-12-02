@@ -1,6 +1,6 @@
 # Scenario 4: RTP Injection Attack
 ### Description
-In this scenario, after two clients establish a communication, an attacker can intercept the RTP traffic (due to the RTP Bleed vulnerability) and inject malicious audio into the conversation.
+In this scenario, after two clients establish a communication, an attacker can intercept the RTP traffic (due to the RTP Bleed vulnerability) and inject malicious audio into the conversation. This is possible because, due to NATting, because the RTP proxies learn the attacker's IP address and subsequently send the RTP stream to him. In this way, it can listen to the legitimate conversation and inject  malignous audio into it.
 
 ### How to reproduce the issue
 As a first step, the containers are started with:
