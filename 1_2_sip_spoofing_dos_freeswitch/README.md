@@ -32,6 +32,6 @@ As a result, the following message will appear:
 ### How to reproduce the issue - Scenario DoS via SIP Flood
 In the second scenario, again from the attacker container, the following is executed:
 ```bash
-python3 spoofing.py <IP_VM>
+python3 dos-sipflood.py <IP_VM>
 ```
 The effect can be observed by monitoring the container statistics using `docker stats`. The memory limit is reached first, after which the container eventually terminates.
