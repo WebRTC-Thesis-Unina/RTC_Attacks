@@ -1,0 +1,9 @@
+services:
+  node:
+    container_name: node
+    build: ./node
+    tty: true
+    volumes:
+      - ./node:/node:ro
+    command: ["node", "node/server.js"]
+    network_mode: "host"
