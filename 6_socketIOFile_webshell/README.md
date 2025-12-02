@@ -1,6 +1,6 @@
 # Scenario 6: Ransomware
 ### Description
-In this scenario, it is possible to upload a malicious javaScript file to execute a webshell on the victim machine. Once this is done, the attacker loads the python ransomware file from their HTTP server and executes it through the webshell. The effect is the encryption of the files on the victim machine.
+In this scenario, it is possible to upload a malicious javaScript file to execute a webshell on the victim machine. This is possible because the server doesn't control the file format and save it on machine. Once this is done, the attacker loads the python ransomware file from their HTTP server and executes it through the webshell. The effect is the encryption of the files on the victim machine.  
 
 ### How to reproduce the issue
 As a first step, the containers are started with:
