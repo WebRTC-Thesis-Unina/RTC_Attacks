@@ -1,7 +1,6 @@
 # Scenario 7 and 8: Access Bypass and Information Disclosure
 ### Description
-In this scenario, by inserting specific input values, it is possible to bypass login controls and access the VDO.Ninja platform. Then, using a particular query string, sensitive information (e.g., cookies) can be extracted. 
-The access bypass is possible because, in the vulnerable version of Mongoose library, BSON attribute inputs are ignored. The information disclosure occurs because some inputs are not properly sanitized.
+In this scenario, by inserting specific input values, it is possible to bypass login controls and access the VDO.Ninja platform. Then, using a particular query string, sensitive information (e.g., cookies) can be extracted.
 
 ### How to reproduce the issue - Scenario Access Bypass
 As a first step, the containers are started with:

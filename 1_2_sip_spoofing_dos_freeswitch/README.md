@@ -1,6 +1,6 @@
 # Scenario 1 and 2: SIP Spoofing and DoS Attack
 ### Description
-In this scenario, the first attack consists of sending a SIP Message from an unregistered user impersonating another user (spoofing). This is possible because everyone can send a SIP MESSAGE without authentication. In the second attack, continuous registration requests are sent to the FreeSWITCH server, causing the container to crash (DoS via SIP Flooding). There's no mechanism to rate-limit these requests. The server keeps allocating memory, and after many requests the memory limit is reached, causing the container to terminate.
+In this scenario, the first attack consists of sending a SIP Message from an unregistered user impersonating another user (spoofing). In the second attack, continuous registration requests are sent to the FreeSWITCH server, causing the container to crash (DoS via SIP Flooding).
 
 ### How to reproduce the issue - Scenario SIP Spoofing
 For both attacks, the Linphone application is used. For the first scenario, a user must be registered. FreeSWITCH provides default users ranging from <b>1000</b> to <b>1020</b> (it is recommended to use one of these).

@@ -1,6 +1,6 @@
 # Scenario 3: Memory Corruption
 ### Description
-In this scenario, due to a malformed request sent to the server, it crashes because of memory corruption: data is written beyond the dynamically allocated memory. There is no validation of the size of <i>tag</i> and <i>branch</i> in a SIP request. It causes segmentation fault and the termination of Kamailio container.
+In this scenario, due to a malformed request sent to the server, it crashes because of Memory Corruption: the data is written beyond the dynamically allocated memory.
 
 ### How to reproduce the issue
 In this scenario, the first step is to start the containers:

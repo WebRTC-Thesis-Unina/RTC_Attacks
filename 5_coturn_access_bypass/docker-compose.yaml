@@ -21,7 +21,7 @@ services:
 
   node:
     container_name: node
-    image: node:iron-trixie-slim
+    build: ./node
     tty: true
     volumes:
       - ./node:/node:ro

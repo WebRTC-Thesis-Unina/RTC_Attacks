@@ -1,6 +1,6 @@
 # Scenario 5: Access Bypass
 ### Description
-In this scenario, after creating a socks5 proxy to the TURN server. It is possible, using specific HTTP GET requests and specific IP address (for example ```0.0.0.0```), to access the loopback interface of the server. 
+In this scenario, after creating a socks5 proxy to the TURN server, it is possible using specific HTTP GET requests to access the loopback interface of the server.
 
 ### How to reproduce the issue
 As a first step, the containers are started with:
