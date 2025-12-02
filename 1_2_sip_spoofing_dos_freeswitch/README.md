@@ -34,4 +34,4 @@ In the second scenario, again from the attacker container, the following is exec
 ```bash
 python3 dos-sipflood.py <IP_VM>
 ```
-The effect can be observed by monitoring the container statistics using `docker stats`. The memory limit is reached first, after which the container eventually terminates.
+The effect can be observed by monitoring the container statistics using `docker stats`. The memory limit is reached first, after which the container terminates.
