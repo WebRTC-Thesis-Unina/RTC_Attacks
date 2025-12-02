@@ -3,7 +3,11 @@
 In this scenario, after launching the phishing campaign, the user receives the email. They decide to click the button and are redirected to the landing page managed by the attacker. On this page, they enter their data, which is captured by the attacker, and are then redirected to their intended web page. On this page, the user grants permissions to access the microphone and camera. Believing these permissions are used for chat purposes, the user inadvertently allows the attacker to access the audio and video stream, which can then be used on third-party sites.
 
 ### How to reproduce the issue
-As a first step, the containers are started with:
+Before starting containers, install the dependencies for the NodeJS server using:
+```bash
+npm i express https ws fs path
+```
+Then start the containers with:
 ```bash
 docker compose up -d --build
 ```

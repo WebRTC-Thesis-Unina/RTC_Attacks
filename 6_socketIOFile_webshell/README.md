@@ -3,7 +3,13 @@
 In this scenario, it is possible to upload a malicious javaScript file to execute a webshell on the victim machine. Once this is done, the attacker loads the python ransomware file from their HTTP server and executes it through the webshell. The effect is the encryption of the files on the victim machine.
 
 ### How to reproduce the issue
-As a first step, the containers are started with:
+Before starting containers, install the dependencies for the NodeJS server using:
+```bash
+npm i express http socket.io socket.io-file@2.0.31 path
+```
+> <b>Note:</b> It's important to use a <b>vulnerable version</b> of socket.io-file.
+
+Then start the containers with:
 ```bash
 docker compose up -d --build
 ```

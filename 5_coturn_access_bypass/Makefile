@@ -1,8 +1,10 @@
 start:
-	@docker compose up -d --build
+	@cd node && npm i --no-bin-links fs express https socket.io
+	@docker-compose up -d --build
 
 stop:
-	@docker compose down
+	@docker-compose down
+	@cd node && rm -r node_modules && rm package*.json
 
 follow-coturn:
 	@docker logs coturn --follow
