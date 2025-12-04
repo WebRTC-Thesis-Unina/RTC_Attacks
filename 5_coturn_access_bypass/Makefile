@@ -1,9 +1,11 @@
+DOCKER_COMPOSE := $(shell command -v docker-compose 2> /dev/null || echo "docker compose")
+
 start:
 	@cd node && npm i --no-bin-links fs express https socket.io
-	@docker-compose up -d --build
+	@$(DOCKER_COMPOSE) up -d --build
 
 stop:
-	@docker-compose down
+	@$(DOCKER_COMPOSE) down
 	@cd node && rm -r node_modules && rm package*.json
 
 follow-coturn:
