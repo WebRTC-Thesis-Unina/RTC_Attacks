@@ -3,5 +3,4 @@ services:
     container_name: node
     build: ./node
     tty: true
-    command: ["node", "node/server.js"]
     network_mode: "host"

@@ -1,13 +1,13 @@
-# Scenario 5: Access Bypass
-### Description
+# Access Bypass
+- Vulnerable component: coTURN server
+- Affected version: 4.5.1.x
+- CVE ID: [CVE-2020-26262](https://nvd.nist.gov/vuln/detail/CVE-2020-26262)
+
+## Description
 In this scenario, after creating a socks5 proxy to the TURN server, it is possible using specific HTTP GET requests to access the loopback interface of the server.
 
-### How to reproduce the issue
-Before starting containers, install the dependencies for the NodeJS server using:
-```bash
-npm i fs express https socket.io
-```
-Then start the containers with:
+## How to reproduce the issue
+As a first step, the containers are started with:
 ```bash
 docker compose up -d --build
 ```
@@ -39,3 +39,10 @@ the request is blocked (coTURN blocks requests toward loopback addresses). Howev
 ```
 curl -x socks5h://203.0.113.4:9999 http://0.0.0.0:8000
 ```
+## Mitigations
+- Update to patched version.
+- In the server configuration file, insert the following line: ```denied-peer-ip=0.0.0.0-0.255.255.255```. In this way is possible to block the address of the ```0.0.0.0/8``` network.
+
+
+## Credits
+This vulnerability was discovered by [Enable Security](https://www.enablesecurity.com/)
