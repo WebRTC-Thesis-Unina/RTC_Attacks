@@ -6,7 +6,7 @@ services:
       - ./coturn/etc:/etc
     networks:
       server_network:
-        ipv4_address: 203.0.113.10
+        ipv4_address: 10.0.0.10
 
   stunner:
     container_name: stunner
@@ -17,7 +17,7 @@ services:
       - coturn
     networks:
       server_network:
-        ipv4_address: 203.0.113.4
+        ipv4_address: 10.0.0.4
 
   node:
     container_name: node
@@ -25,12 +25,12 @@ services:
     tty: true
     networks:
       server_network:
-        ipv4_address: 203.0.113.3
+        ipv4_address: 10.0.0.3
 
 networks:
   server_network:
     driver: bridge
     ipam:
       config:
-        - subnet: 203.0.113.0/24
-          gateway: 203.0.113.1
+        - subnet: 10.0.0.0/24
+          gateway: 10.0.0.1

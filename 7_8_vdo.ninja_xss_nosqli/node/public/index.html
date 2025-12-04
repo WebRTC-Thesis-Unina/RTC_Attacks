@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+        <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+
+    form {
+      background-color: white;
+      padding: 2rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 350px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 93%;
+      padding: 0.7rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #5563DE;
+      box-shadow: 0 0 4px rgba(85, 99, 222, 0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background-color: #5563DE;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #3f4cc1;
+    }
+
+    .footer-text {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .footer-text a {
+      color: #5563DE;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
+    </head>
+    <body>
+        <form id="loginForm">
+            <h2>Login</h2>
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Inserisci username" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Inserisci password" required>
+
+            <button type="submit">Accedi</button>
+
+            <div class="footer-text">
+            Non hai un account? <a href="#">Registrati</a>
+            </div>
+        </form>
+
+        <script type="module">
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+    
+            e.preventDefault();
+
+            const payload = {
+                username: username,
+                password: {
+                  "_bsontype": "a",
+                  "$eq": password
+                }
+            };
+
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            
+            if (res.status === 404) {
+              alert('User not found');
+            } else {
+              alert('Welcome!');
+              setTimeout(()=>{
+                document.cookie = "username= " + username + "; expires= Thu, 18 Dec 2025 12:00:00 UTC; path=/";   
+                window.location.href = "https://192.168.1.50:8080";
+              }, 500)
+            } 
+        });
+        </script>
+    </body>
+</html>
