@@ -1,8 +1,10 @@
+DOCKER_COMPOSE := $(shell command -v docker-compose 2> /dev/null || echo "docker compose")
+
 start:
-	@docker compose up -d --build
+	@$(DOCKER_COMPOSE) up -d --build
 
 stop:
-	@docker compose down
+	@$(DOCKER_COMPOSE) down
 
 start-attacks:
 	@docker exec -it sipp101 bash

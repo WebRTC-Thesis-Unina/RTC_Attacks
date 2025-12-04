@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "http": "^0.0.1-security",
+    "path": "^0.12.7",
+    "socket.io": "^4.8.1",
+    "socket.io-file": "^2.0.31"
+  }
+}

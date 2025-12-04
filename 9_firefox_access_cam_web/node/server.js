@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-app.use(express.static('node/public'));
+app.use(express.static('public'));
 app.use(express.json({ limit: '500mb' }));
 
 function checkDirectory(dirPath) {
@@ -15,8 +15,8 @@ function checkDirectory(dirPath) {
 }
 
 const server = https.createServer({
-    key: fs.readFileSync('node/key.pem'),
-    cert: fs.readFileSync('node/cert.pem')
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
 }, app);
 
 const wss = new ws({
@@ -34,8 +34,8 @@ wss.on("connection", ws => {
 
 app.post("/save-capture", (req, res) => {
 
-    const audioDir = path.join("/tmp", "data", "audio");
-    const imgDir   = path.join("/tmp", "data", "images");
+    const audioDir = path.join(__dirname, "data", "audio");
+    const imgDir   = path.join(__dirname, "data", "images");
 
     checkDirectory(audioDir);
     checkDirectory(imgDir);

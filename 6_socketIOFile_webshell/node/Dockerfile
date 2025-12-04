@@ -5,4 +5,9 @@ RUN apt-get update -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . ./node
+WORKDIR /app
+COPY package*.json ./
+RUN npm i express http socket.io socket.io-file@2.0.31 path
+COPY . .
+
+CMD ["node", "server.js"]

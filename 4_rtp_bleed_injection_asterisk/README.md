@@ -1,8 +1,14 @@
-# Scenario 4: RTP Injection Attack
-### Description
+# RTP Injection Attack
+- Vulnerable component: Asterisk server
+- Affected versions: 
+    - for class 11.x before 11.25.2
+    - for class 13.x before 13.17.1
+    - for class 14.x before 14.6.1
+- CVE ID: [CVE-2017-14099](https://nvd.nist.gov/vuln/detail/CVE-2017-14099)
+## Description
 In this scenario, after two clients establish a communication, an attacker can intercept the RTP traffic (due to the RTP Bleed vulnerability) and inject malicious audio into the conversation.
 
-### How to reproduce the issue
+## How to reproduce the issue
 As a first step, the containers are started with:
 ```bash
 docker compose up -d --build
@@ -32,4 +38,11 @@ where:
 -```-r <port_number>``` represents the IP address of the VM running the Asterisk server;
 - ```-f audio.wav``` indicates the audio file injected into the conversation.
 
-The resulting effect is a degradation of the communication.
+In the vulnerable versions, if ```nat = yes```, the RTP proxies can automatically learn the attacker's IP and port and send the RTP legitimate traffic to him. After that, the attacker can send a malisous audio and degradeted the connection.
+
+## Mitigations
+- Set ```nat = false``` to prevent the proxy from automatically learning information about attackers.
+- Use patched version of Asterisk.
+
+## Credits
+This vulnerability was discovered by [Enable Security](https://www.enablesecurity.com/)
