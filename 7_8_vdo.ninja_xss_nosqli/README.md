@@ -3,7 +3,14 @@
 In this scenario, by inserting specific input values, it is possible to bypass login controls and access the VDO.Ninja platform. Then, using a particular query string, sensitive information (e.g., cookies) can be extracted.
 
 ### How to reproduce the issue - Scenario Access Bypass
-As a first step, the containers are started with:
+Before starting containers, install the dependencies for the NodeJS server using:
+```bash
+npm i fs express https mongoose@5.7.4
+```
+
+> <b>Note:</b> It's important to use a <b>vulnerable version</b> of mongoose.
+
+Then start the containers with:
 ```bash
 docker compose up -d --build
 ```

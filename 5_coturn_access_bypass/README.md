@@ -3,7 +3,11 @@
 In this scenario, after creating a socks5 proxy to the TURN server, it is possible using specific HTTP GET requests to access the loopback interface of the server.
 
 ### How to reproduce the issue
-As a first step, the containers are started with:
+Before starting containers, install the dependencies for the NodeJS server using:
+```bash
+npm i fs express https socket.io
+```
+Then start the containers with:
 ```bash
 docker compose up -d --build
 ```
