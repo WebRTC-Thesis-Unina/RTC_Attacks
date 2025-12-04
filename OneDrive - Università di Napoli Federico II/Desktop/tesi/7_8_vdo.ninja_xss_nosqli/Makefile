@@ -1,7 +1,7 @@
+DOCKER_COMPOSE := $(shell command -v docker-compose 2> /dev/null || echo "docker compose")
+
 start:
-	@cd node && npm i --no-bin-links fs express https mongoose@5.7.4
-	@docker-compose up -d --build
+	@$(DOCKER_COMPOSE) up -d --build
 
 stop:
-	@docker-compose down
-	@cd node && rm -r node_modules && rm package*.json
+	@$(DOCKER_COMPOSE) down

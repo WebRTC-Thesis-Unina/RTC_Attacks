@@ -5,7 +5,7 @@ const SocketIOFile = require('socket.io-file');
 const path = require('path');
 
 const app = express();
-app.use(express.static('node/public'));
+app.use(express.static('public'));
 
 app.get('/:filename', (req, res) => {
   const filename = req.params.filename;
@@ -33,7 +33,7 @@ io.on('connection', socket => {
   console.log('Client connesso:', socket.id);
 
   socket.on('chat message', msg => {
-    io.emit('chat message', msg); // rimanda a tutti tranne mitt
+    io.emit('chat message', msg);
   });
 
   const uploader = new SocketIOFile(socket, {
