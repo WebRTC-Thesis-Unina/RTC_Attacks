@@ -1,6 +1,0 @@
-services:
-  node:
-    container_name: node
-    build: ./node
-    tty: true
-    network_mode: "host"
