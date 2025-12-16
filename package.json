@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-ec2": "^3.948.0",
+    "aws-sdk": "^2.1692.0",
+    "child_process": "^1.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "http": "^0.0.1-security",
+    "mongoose": "^9.0.0",
+    "os": "^0.1.2",
+    "remove": "^0.1.5",
+    "wait-on": "^9.0.3"
+  }
+}

@@ -53,3 +53,28 @@ In this scenario, after an initial phase of collecting victim data via phishing,
 - <b>Firefox</b>: web browser v.68 vulnerable to permission abuse.
 
 In this scenario, after launching the phishing campaign, the user receives the email. They decide to click the button and are redirected to the landing page managed by the attacker. On this page, they enter their data, which is captured by the attacker, and are then redirected to their intended web page. On this page, the user grants permissions to access the microphone and camera. Believing these permissions are used for chat purposes, the user inadvertently allows the attacker to access the audio and video stream, which can then be used on third-party sites.
+
+## Requirements
+To use this web application, you need to have the following installed on your local machine:
+- Docker
+- Docker Compose
+- npm
+
+In addition, you need the following applications installed:
+- Linphone
+- GoPhish
+- Firefox (version < 69 or Firefox ESR < 68.1)
+- MongoDB Compass
+
+## Setup
+1. After installing the required software, start MongoDB and import the provided JSON file containing the scenarios.
+2. Then you can start the web application using Docker Compose.
+
+## Using a Remote EC2 Instance
+If you want to use a remote AWS EC2 instance instead of running locally, you need to:
+1. Create an EC2 instance on AWS.
+2. Set the following environment variables:
+    - ```AWS_ACCESS_KEY_ID```
+    - ```AWS_SECRET_ACCESS_KEY```
+    - ```INSTANCE_ID```
+    - ```AWS_REGION```

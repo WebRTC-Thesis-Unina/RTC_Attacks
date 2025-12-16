@@ -1,0 +1,14 @@
+services:
+  ttyd:
+    container_name: ttyd
+    build: .
+    image: ttyd
+    ports:
+      - "7681:7681"
+    environment:
+      SSH_USER: ${SSH_HOSTNAME}
+      SSH_HOST: ${SSH_IP}
+      SSH_KEY: ${SSH_KEY}
+    command: ["bash", "-c", "ttyd --writable bash -c 'ssh -i $SSH_KEY -o StrictHostKeyChecking=no $SSH_HOSTNAME@$SSH_IP; exec bash'"]
+    stdin_open: true
+    tty: true

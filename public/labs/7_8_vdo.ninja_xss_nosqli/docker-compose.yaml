@@ -2,10 +2,12 @@ services:
   ndoninja:
     container_name: vdoninja
     build: ./vdoninja
+    image: vdoninja
     network_mode: "host"
 
   node:
     container_name: node
     build: ./node
+    image: node_mongoose
     tty: true
     network_mode: "host"

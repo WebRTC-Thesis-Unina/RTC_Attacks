@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>I've been hacked!</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
+  <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+  <style>
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgb(1, 102, 160) #e7e7e7;
+      font-family: "Source Sans Pro", sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #e7e7e7;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    a, b, code {
+      color:rgb(0, 111, 151)
+    }
+
+    a:hover {
+      color: rgb(0, 61, 97)
+    }
+
+    pre {
+      background-color: rgba(6, 49, 80, 0.678);
+      padding: 10px;
+      border-radius: 10px;
+      color: rgb(255, 255, 255)
+    }
+
+    .main-container {
+      width: 100%;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      transition: grid-template-columns .3s ease;
+    }
+
+    .main-container.sidebar-collapsed {
+      grid-template-columns: 70px 1fr !important;
+    }
+
+    .sidebar {
+      background: rgba(6, 49, 80, 0.9);
+      color: white;
+      padding: 20px 10px;
+      transition: width .3s ease, padding .3s ease;
+      overflow-y: auto;
+    }
+
+    .sidebar.collapsed {
+      width: 60px !important;
+      overflow-y: hidden;
+      padding: 20px 5px;
+    }
+
+    .img-logo {
+      width: 100%;
+      border-radius: 40px;
+      padding: 20px;
+      transition: opacity .3s ease;
+      overflow-y: auto;
+    }
+
+    .sidebar.collapsed .img-logo, .sidebar.collapsed .menu-item {
+      opacity: 0;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 10px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: .2s;
+      white-space: nowrap;
+      overflow-y: auto;
+      transition: opacity .3s ease;
+    }
+
+    .menu-item:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .sidebar.collapsed .menu-item {
+      justify-content: center;
+      gap: 0;
+    }
+
+    .toggle-sidebar {
+      position: absolute;
+      left: 5px;
+      top: 5px;
+      width: 45px;
+      height: 45px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .toggle-sidebar:hover {
+      background: rgb(4,40,65);
+    }
+
+    .content {
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .intro-wrapper {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    .content img {
+      width: 70%;
+      border-radius: 10px;
+    }
+
+    .content h1, .content h2, .content h3 {
+      color: rgb(0, 111, 151);
+      font-weight: 700;
+    }
+
+    .intro-hero {
+      background: white;
+      border-radius: 20px;
+      padding: 60px 50px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .intro-hero h1 {
+      font-size: 2.4rem;
+      color: rgb(0, 111, 151);
+      margin-bottom: 15px;
+    }
+
+    .intro-hero p {
+      color: #555;
+      margin-bottom: 40px;
+    }
+
+    .intro-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .intro-card {
+      background: #f7f9fc;
+      padding: 25px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .div-card {
+      text-align: center;
+    }
+
+    .intro-card i {
+      font-size: 2.2rem;
+      color: rgb(0, 111, 151);
+      margin-bottom: 15px;
+    }
+
+    .intro-card h3 {
+      margin-bottom: 10px;
+    }
+
+    .intro-card p {
+      margin-bottom: 0;
+    }
+
+    .cloud-panel {
+      height: calc(100vh - 50px);
+      overflow-y: auto;
+      background-color: #3d6098bd;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .cloud-panel h3, .cloud-panel p {
+      color: #fff;
+    }
+
+    .top-controls {
+      position: fixed;
+      top: 40px;
+      right: 40px;
+      display: flex;
+      gap: 10px;   
+      z-index: 9999;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    #btn-start, #ec2-yes {
+      background: #15ac29;
+    }
+
+    #btn-start:hover, #ec2-yes:hover {
+      background: #0f8e4c;
+    }
+
+    #btn-stop, #ec2-no {
+      background: #c53737;
+    }
+
+    #btn-stop:hover, #ec2-no:hover {
+      background: #a62f2f;
+    }
+
+    .cloud-panel.hidden {
+      display: none;
+    }
+
+    #vm-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 50px;
+    margin-left: 10px;
+    position: relative;
+  }
+
+  #vm-status.running {
+    background-color: #d4f0d4; 
+    color: #0a660a;
+  }
+
+  #vm-status.stopped {
+    background-color: #f0d4d4; 
+    color: #8b0000;
+  }
+
+  #vm-status::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    background-color: currentColor;
+  }
+
+  .ec2-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+  }
+
+  .ec2-card {
+    background: linear-gradient(145deg, #1e3c72, #2a5298);
+    color: #fff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    max-width: 400px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .ec2-card p {
+    margin-bottom: 25px;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .ec2-btn {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  @media (max-width: 900px) {
+    .main-container {
+      grid-template-columns: 1fr;
+    }
+    .sidebar, .toggle-sidebar {
+      display: none;
+    }
+  } 
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="toggle-sidebar">
+      <i class="fas fa-bars"></i>
+    </div>
+    <div class="sidebar">
+      <img class="img-logo" src="logo.png" alt="">
+    </div>
+    <div class="content">
+      <div class="intro-wrapper">
+        <div id="intro" class="intro-hero">
+          <h1>I've been hacked!</h1>
+          <p>
+            Welcome to an interactive cybersecurity playground.<br>
+            Choose a scenario from the left menu and start investigating real-time attacks.
+          </p>
+          <div class="intro-cards">
+            <div class="intro-card">
+              <div class="div-card">
+                <i class="fas fa-bug"></i>
+                <h3>Real-Time Vulnerabilities</h3>
+                <p>Explore SIP, RTP, WebRTC, XSS, NoSQLi and more.</p>
+              </div>
+            </div>
+            <div class="intro-card">
+              <div class="div-card">
+                <i class="fas fa-cloud"></i>
+                <h3>Cloud or Local</h3>
+                <p>Run scenarios locally or spin up an EC2 instance.</p>
+              </div>
+            </div>
+            <div class="intro-card">
+              <div class="div-card">
+                <i class="fas fa-terminal"></i>
+                <h3>Hands-on</h3>
+                <p>Use a real terminal via browser and break things safely.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="scenario-container"></div>
+      <div class="top-controls">
+        <button id="btn-start" class="btn"style="display:none;">Start VM</button>
+        <button id="btn-stop" class="btn" style="display:none;">Stop VM</button>
+      </div>
+      <div id="vm-container">
+        <div class="cloud-panel hidden">
+          <h3>Virtual Machine</h3>
+          <p>Status: <span id="vm-status">Unknown</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ec2-container" style="display:none;">
+    <div class="ec2-card">
+      <p>Do you want to start an EC2 instance or continue on your local machine?</p>
+      <div class="ec2-btn">
+        <button id="ec2-yes" class="btn">Yes, start!</button>
+        <button id="ec2-no" class="btn">No, continue!</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
+  <script>
+    const startMachine = document.querySelector("#btn-start");
+    const stopMachine = document.querySelector("#btn-stop");
+    const vmStatus = document.querySelector("#vm-status");
+    const vmContainer = document.querySelector("#vm-container");
+    const cloudPanel = document.querySelector(".cloud-panel");
+    const startec2 = document.querySelector("#ec2-yes");
+    const notstartec2 = document.querySelector("#ec2-no");
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.querySelector('.toggle-sidebar');
+    const mainContainer = document.querySelector('.main-container');
+    let isStartedEc2 = false;
+    let ID = 0;
+
+    const folders = {
+      1: "1_2_sip_spoofing_dos_freeswitch",
+      2: "1_2_sip_spoofing_dos_freeswitch",
+      3: "3_heap_overflow_kamailio",
+      4: "4_rtp_bleed_injection_asterisk",
+      5: "5_coturn_access_bypass",
+      6: "6_socketIOFile_webshell",
+      7: "7_8_vdo.ninja_xss_nosqli",
+      8: "9_firefox_access_cam_web",
+    }
+
+    function configContainer(){
+      document.querySelector(".ec2-container").style.display = "none";
+
+      cloudPanel.classList.remove("hidden");
+      startMachine.style.display = "none";
+      stopMachine.style.display = "inline-block";
+
+      vmStatus.textContent = "Starting...";
+      vmStatus.className = "";
+      vmStatus.classList.add("running");
+      
+      cloudPanel.scrollIntoView({ behavior: "smooth" });
+    }
+
+    async function startTTYD(hostname, ip, key) {
+      await fetch(`/make-start/${ip}/${hostname}/${key}/${folders[ID]}`)
+      .then(res => res.json())
+      .catch((err) => {
+        console.error(err);
+      })
+
+        vmStatus.textContent = "Running";
+        // Iframe
+        const iframe = document.createElement("iframe");
+        iframe.src = "http://localhost:7681";
+        iframe.style.width = "100%";
+        iframe.style.height = "70vh";
+        iframe.style.border = "1px solid #ccc";
+        iframe.style.borderRadius = "10px";
+        iframe.style.marginTop = "10px";
+        cloudPanel.appendChild(iframe);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      fetch("/scenarios")
+        .then(res => res.json())
+        .then(data => {
+          const {names, ids} = data;
+
+          names.forEach((name, index) => {
+            const div = document.createElement("div");
+            div.classList.add("menu-item");
+            div.id = ids[index];
+            div.textContent = name;
+            
+            div.addEventListener("click", () => {
+              document.querySelector(".intro-wrapper").style.display = "none";
+              fetch(`/scenario/${div.id}`)
+              .then(res => res.json())
+              .then(data => {
+                ID = div.id
+                document.getElementById("btn-start").style.display = "inline-block";
+                const {description} = data;
+                const contentDiv  = document.createElement("div");
+                const converter = new showdown.Converter();
+                const html = converter.makeHtml(description);
+                contentDiv.innerHTML = html;
+                document.querySelector("#scenario-container").innerHTML = "";
+                document.querySelector("#scenario-container").appendChild(contentDiv);
+              })
+            })
+            document.querySelector(".sidebar").appendChild(div);
+          });
+        })
+        .catch(err => console.error("Error:", err));
+    });
+
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
+      toggleBtn.classList.toggle("collapsed");
+      mainContainer.classList.toggle("sidebar-collapsed");
+    });
+    
+    startMachine.addEventListener("click", () => {
+      document.querySelector(".ec2-container").style.display = "inline-block";
+    })
+    
+    startec2.addEventListener("click", async() => {
+      isStartedEc2 = true;
+      configContainer();
+      await fetch("/start-ec2")
+      .then(res => res.json())
+      .then(async (data) => {
+        let ip = data.ip;
+        let region = data.region;
+
+        const ipString = ip.replace(/\./g, "-");
+        const dns = "ec2-" + ipString + "."+ region +".compute.amazonaws.com"
+        
+        const hostname = "ubuntu"
+        const key = "key_pem.pem"
+
+        startTTYD(hostname, dns, key); 
+      })
+      .catch(err => {
+        console.error(err);
+      });
+    })
+
+    notstartec2.addEventListener("click", async () => {
+      const hostname = "none"
+      const ip = "none"
+      const key = "key_rsa.pem"
+      
+      isStartedEc2 = false;
+      configContainer();
+      await startTTYD(hostname, ip, key);
+    })
+
+    stopMachine.addEventListener("click", async() => {
+      vmStatus.textContent = "Stopping...";
+      vmStatus.className = "";
+      vmStatus.classList.add("stopped");
+      cloudPanel.querySelector("iframe").remove();
+      
+      await fetch(`/make-stop/${folders[ID]}`)
+      .catch(err => {
+        console.error(err);
+      });
+
+      if(isStartedEc2){
+        await fetch("/stop-ec2")
+        .then(res => res.json())
+        .catch(err => {
+          console.error(err);
+        });
+      } 
+
+      await fetch("/make-stop-ttyd")
+      .then(() => {
+        cloudPanel.classList.add("hidden");
+        startMachine.style.display = "inline-block";
+        stopMachine.style.display = "none"; 
+      })
+      .catch(err => {
+        console.error(err);
+      });
+    });
+  </script>
+</body>
+</html>

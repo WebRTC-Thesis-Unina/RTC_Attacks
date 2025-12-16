@@ -2,6 +2,7 @@ services:
   coturn:
     container_name: coturn
     build: ./coturn
+    image: coturn
     volumes:
       - ./coturn/etc:/etc
     networks:
@@ -11,6 +12,7 @@ services:
   stunner:
     container_name: stunner
     build: ./stunner
+    image: stunner
     tty: true
     entrypoint: ["sh","-c","tail -f /dev/null"]
     depends_on:
@@ -22,6 +24,7 @@ services:
   node:
     container_name: node
     build: ./node
+    image: node_coturn
     tty: true
     networks:
       server_network:

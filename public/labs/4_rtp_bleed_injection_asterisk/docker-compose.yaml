@@ -2,6 +2,7 @@ services:
   asterisk:
     container_name: asterisk
     build: ./asterisk
+    image: asterisk
     command: asterisk -f -vv
     tty: true
     network_mode: "host"
@@ -11,6 +12,7 @@ services:
   sippts:
     container_name: sippts
     build: ./sippts
+    image: sippts
     command: /bin/bash
     tty: true
     depends_on:

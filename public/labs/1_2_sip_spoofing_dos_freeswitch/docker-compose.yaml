@@ -8,6 +8,7 @@ services:
   attacker:
     container_name: attacker
     build: ./attacker
+    image: attacker
     command: /bin/sh
     tty: true
     depends_on:

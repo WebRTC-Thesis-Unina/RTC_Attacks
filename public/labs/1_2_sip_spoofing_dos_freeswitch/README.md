@@ -10,7 +10,7 @@ For both attacks, the Linphone application is used. For the first scenario, a us
 The username corresponds to the chosen value, while the password is <b>1234</b>.
 To complete the registration, the SIP server must be specified. The IP address of the VM hosting the containers is used:
 
-![registration](/1_2_sip_spoofing_dos_freeswitch/img/1001.png)
+![registration](/public/labs/1_2_sip_spoofing_dos_freeswitch/img/1001.png)
 
 The containers are started with:
 ```bash
@@ -57,7 +57,7 @@ Because the server does not verify that the sender is registered (i.e. ```auth-m
 
 The following message will appear:
 
-![spoofing](/1_2_sip_spoofing_dos_freeswitch/img/message_unicredit.png)
+![spoofing](/public/labs/1_2_sip_spoofing_dos_freeswitch/img/message_unicredit.png)
 
 ## Mitigations
 - Upgrade to a patched version (e.g. 1.10.7 or later). 

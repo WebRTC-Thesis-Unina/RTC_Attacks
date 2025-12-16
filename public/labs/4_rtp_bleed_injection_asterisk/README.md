@@ -16,9 +16,15 @@ docker compose up -d --build
 For this scenario, the Linphone application must be used to simulate the SIP clients.
 Users <b>7001</b> e <b>7002</b> are registered. Below is the registration of user 7001 (the registration procedure for 7002 is analogous):
 
-![registration](/4_rtp_bleed_injection_asterisk/img/7001_registration.png)
+![registration](/public/labs/4_rtp_bleed_injection_asterisk/img/7001_registration.png)
 
-The Wireshark container is started to observe the port used for RTP traffic (in the example, RTP uses ports between 10000 and 10099). The following command is used:
+The Wireshark container is started to observe the port used for RTP traffic (in the example, RTP uses ports between 10000 and 10099). 
+
+To run Wireshark with a graphical interface from the container, you need to allow local root users to access the host’s display. This can be done with:
+```bash
+xhost +local:root
+```
+Then the user can use the following command:
 ```bash
 docker exec -it wireshark wireshark
 ```
