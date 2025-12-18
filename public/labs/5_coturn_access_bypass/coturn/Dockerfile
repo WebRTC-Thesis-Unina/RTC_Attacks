@@ -77,4 +77,5 @@ VOLUME ["/var/lib/coturn"]
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["--log-file=stdout", "--external-ip=$(detect-external-ip)"]
+# CMD ["--log-file=stdout", "--external-ip=$(detect-external-ip)"]
+CMD ["--log-file=stdout"]

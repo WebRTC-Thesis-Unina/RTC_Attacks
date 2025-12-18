@@ -10,7 +10,7 @@ RUN go build -ldflags="-s -w" -o /usr/local/bin/stunner .
 
 # Runtime minimale
 FROM alpine:3.19
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates curl
 RUN addgroup -S stunner && adduser -S -G stunner stunner
 COPY --from=builder /usr/local/bin/stunner /usr/local/bin/stunner
 USER stunner
