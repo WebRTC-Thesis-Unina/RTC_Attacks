@@ -13,11 +13,13 @@ As a first step, the containers are started with:
 ```bash
 docker compose up -d --build
 ```
+### Step 1: Register two Linphones
 For this scenario, the Linphone application must be used to simulate the SIP clients.
 Users <b>7001</b> e <b>7002</b> are registered. Below is the registration of user 7001 (the registration procedure for 7002 is analogous):
 
 ![registration](/public/labs/4_rtp_bleed_injection_asterisk/img/7001_registration.png)
 
+### Step 2: Start Wireshark
 The Wireshark container is started to observe the port used for RTP traffic (in the example, RTP uses ports between 10000 and 10099). 
 
 To run Wireshark with a graphical interface from the container, you need to allow local root users to access the host’s display. This can be done with:
@@ -29,6 +31,9 @@ Then the user can use the following command:
 docker exec -it wireshark wireshark
 ```
 The network interface is selected, and a call is initiated between Linphone 7001 and 7002.
+
+### Step 3: Exploit the vulnerability
+In the vulnerable versions, if ```nat = yes```, the RTP proxies can automatically learn the attacker's IP and port and send the RTP legitimate traffic to him. After that, the attacker can send a malisous audio and degradeted the connection.
 
 Access the <i>sippts</i> container:
 ```bash
@@ -44,11 +49,11 @@ where:
 -```-r <port_number>``` represents the IP address of the VM running the Asterisk server;
 - ```-f audio.wav``` indicates the audio file injected into the conversation.
 
-In the vulnerable versions, if ```nat = yes```, the RTP proxies can automatically learn the attacker's IP and port and send the RTP legitimate traffic to him. After that, the attacker can send a malisous audio and degradeted the connection.
+
 
 ## Mitigations
 - Set ```nat = false``` to prevent the proxy from automatically learning information about attackers.
 - Use patched version of Asterisk.
 
 ## Credits
-This vulnerability was discovered by [Enable Security](https://www.enablesecurity.com/)
+This vulnerability was discovered by [Enable Security](https://www.enablesecurity.com/).

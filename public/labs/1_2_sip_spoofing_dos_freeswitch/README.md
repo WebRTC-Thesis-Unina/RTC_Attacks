@@ -5,17 +5,23 @@
 ## Description
 In this scenario, the first attack consists of sending a SIP Message from an unregistered user impersonating another user (spoofing). In the second attack, continuous registration requests are sent to the FreeSWITCH server, causing the container to crash (DoS via SIP Flooding).
 
-## How to reproduce the issue - SIP Spoofing
+## 1. How to reproduce the issue - SIP Spoofing
+The vulnerability affects the SIP server, which accepts unauthenticated messages. 
+Because the server does not verify that the sender is registered (i.e. ```auth-messages = false``` by default), the spoofed message will be accepted — resulting in the spoofed user (e.g. ```UniCredit```) appearing to send the message.
+
+The containers are started with:
+```bash
+docker compose up -d --build
+```
+
+### Step 1.1: Register a Linphone
 For both attacks, the Linphone application is used. For the first scenario, a user must be registered. FreeSWITCH provides default users ranging from <b>1000</b> to <b>1020</b> (it is recommended to use one of these).
 The username corresponds to the chosen value, while the password is <b>1234</b>.
 To complete the registration, the SIP server must be specified. The IP address of the VM hosting the containers is used:
 
 ![registration](/public/labs/1_2_sip_spoofing_dos_freeswitch/img/1001.png)
 
-The containers are started with:
-```bash
-docker compose up -d --build
-```
+### Step 1.2: Exploit the vulnerability
 
 Once the <i>attacker</i> container is running, it can be accessed with:
 ```bash
@@ -53,8 +59,6 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.sendto(msg.encode(), (UDP_IP, UDP_PORT))
 ```
 
-Because the server does not verify that the sender is registered (i.e. ```auth-messages = false``` by default), the spoofed message will be accepted — resulting in the spoofed user (e.g. ```UniCredit```) appearing to send the message.
-
 The following message will appear:
 
 ![spoofing](/public/labs/1_2_sip_spoofing_dos_freeswitch/img/message_unicredit.png)
@@ -63,8 +67,13 @@ The following message will appear:
 - Upgrade to a patched version (e.g. 1.10.7 or later). 
 - In configuration, set ```auth-messages = true``` so that SIP MESSAGE requests require authentication.
 
-## How to reproduce the issue - DoS via SIP Flood
-In the second scenario, from the attacker container, run:
+## 2. How to reproduce the issue - DoS via SIP Flood
+In this case no registration is required.
+
+Because the server must allocate resources to process each registration, memory is exhausted and the FreeSWITCH container crashes. 
+### Step 2.1: Exploit the vulnerability
+
+Access the attacker container and run:
 ```bash
 python3 dos-sipflood.py <IP_VM>
 ```
@@ -96,7 +105,6 @@ while True:
 
     cseq += 1
 ```
-Because the server must allocate resources to process each registration, memory is exhausted and the FreeSWITCH container crashes. 
 
 You can observe this by monitoring the container with `docker stats`: after some time memory consumption grows until it hits the limit, then the container terminates.
 
@@ -104,4 +112,4 @@ You can observe this by monitoring the container with `docker stats`: after some
 - Update to patched version (e.g. 1.10.7 or later).
 
 ## Credits
-These vulnerabilities were discovered by [Enable Security](https://www.enablesecurity.com/)
+These vulnerabilities were discovered by [Enable Security](https://www.enablesecurity.com/).

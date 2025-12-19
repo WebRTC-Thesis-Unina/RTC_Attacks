@@ -14,6 +14,9 @@ In this scenario, the first step is to start the containers:
 ```bash
 docker compose up -d --build
 ```
+If a REGISTER request contains a malformed or excessively long  ```branch``` parameter or ```From tag``` — fields that are not properly bounded in vulnerable versions — the call to ```tmx_check_pretran()``` will trigger an off-by-one heap-based buffer overflow, causing a segmentation fault and crashing the container.
+
+### Exploit the vulnerability
 Then, access the <i>sipp101</i> container:
 ```bash
 docker exec -it sipp101 bash
@@ -50,7 +53,6 @@ The script used is:
   
 </scenario>
 ```
-If a REGISTER request contains a malformed or excessively long  ```branch``` parameter or ```From tag``` — fields that are not properly bounded in vulnerable versions — the call to ```tmx_check_pretran()``` will trigger an off-by-one heap-based buffer overflow, causing a segmentation fault and crashing the container.
 
 ### Mitigations
 - Update to patched version:
@@ -59,4 +61,4 @@ If a REGISTER request contains a malformed or excessively long  ```branch``` par
     - for class 5.1.x after 5.1.2.
 
 ## Credits
-This vulnerability was discovered by [Enable Security](https://www.enablesecurity.com/)
+This vulnerability was discovered by [Enable Security](https://www.enablesecurity.com/).

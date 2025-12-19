@@ -33,7 +33,7 @@ This scenario describes an Access Bypass attack. The components used are:
 
 In this scenario, after creating a socks5 proxy to the TURN server, it is possible using specific HTTP GET requests to access the loopback interface of the server.
 
-### Ransomware
+### Remote Code Execution
 This scenario describes a Ransomware attack caused by a server vulnerability that allows the creation of a webshell through the upload of malicious files. The following component is used:
 - <b>node</b>: vulnerable container managing the backend of the web application.
 
@@ -58,7 +58,7 @@ In this scenario, after launching the phishing campaign, the user receives the e
 To use this web application, you need to have the following installed on your local machine:
 - Docker
 - Docker Compose
-- npm
+- NodeJS
 
 In addition, you need the following applications installed:
 - Linphone

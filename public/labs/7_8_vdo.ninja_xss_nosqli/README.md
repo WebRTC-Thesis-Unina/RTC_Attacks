@@ -13,6 +13,7 @@ As a first step, the containers are started with:
 ```bash
 docker compose up -d --build
 ```
+### Step 1.1: Configure NoSQLi Database
 Assuming that MongoDB Compass is used as the NoSQL database on the host machine, a firewall rule must be created to allow the container to access the host. On Windows, this can be done with:
 ```bash
 New-NetFirewallRule -DisplayName "MongoDB" -Direction Inbound -Protocol TCP -LocalPort 27017 -Action Allow
@@ -25,6 +26,7 @@ net:
     bindIp: 0.0.0.0
 ```
 
+### Step 1.2: Exploit the vulnerability
 The web page is accessed through a browser at: ```https://<IP_VM>```. In the vulnerable versions, the ```_bsontype``` attribute is ignored by server, and therefore by entering any username or password, access is granted.
 
 ## Mitigations
@@ -32,13 +34,16 @@ The web page is accessed through a browser at: ```https://<IP_VM>```. In the vul
 - Improve server-side validation controls.
 
 ## How to reproduce the issue - Information Disclosure
-After being redirected to: ```https://<IP_VM>:8080```, a new attack can be performed. Using:
+After being redirected to: ```https://<IP_VM>:8080```, a new attack can be performed. 
+
+For the vulnerable versions, there is no sanification of this particular input.
+
+### Exploit the vulnerability
+Using:
 ```bash
 https://<IP_VM>:8080/examples/control.html?room=<img src=x onerror=alert(document.cookie)>
 ```
 the page’s cookies are obtained.
-
-For the vulnerable versions, there is no sanification of this particular input.
 
 ## Mitigation
 - Update to patched version.

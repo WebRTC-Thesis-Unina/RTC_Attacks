@@ -60,6 +60,7 @@ This also **succeeds** - using IPv6 wildcard address `[::]` also bypasses the pr
 ## Mitigations
 - Update to version 4.5.2 or later (patched version).
 - In the server configuration file, add the following lines to block vulnerable address ranges:
+  
   ```
   denied-peer-ip=0.0.0.0-0.255.255.255
   denied-peer-ip=::
@@ -67,6 +68,5 @@ This also **succeeds** - using IPv6 wildcard address `[::]` also bypasses the pr
   ```
 - If IPv6 is not required, disable it by binding coturn only to IPv4 addresses.
 
-
 ## Credits
-This vulnerability was discovered by [Enable Security](https://www.enablesecurity.com/)
+This vulnerability was discovered by [Enable Security](https://www.enablesecurity.com/).

