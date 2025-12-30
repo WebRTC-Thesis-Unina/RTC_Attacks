@@ -22,7 +22,8 @@ services:
 
   wireshark:
     container_name: wireshark
-    image: nsunina/wireshark:1.0
+    build: ./wireshark
+    image: wireshark
     environment:
     - DISPLAY=:0
     volumes:

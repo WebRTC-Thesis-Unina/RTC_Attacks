@@ -1,7 +1,8 @@
 services:
   freeswitch:
     container_name: freeswitch
-    image: praekeltfoundation/freeswitch:1.6.20
+    build: ./freeswitch
+    image: freeswitch
     network_mode: "host"
     mem_limit: 1g # per simulare l'attacco DoS
   

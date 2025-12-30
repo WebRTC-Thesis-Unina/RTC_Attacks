@@ -1,0 +1,1 @@
+FROM praekeltfoundation/freeswitch:1.6.20

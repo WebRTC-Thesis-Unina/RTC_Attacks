@@ -2,12 +2,13 @@ const fs = require("fs")
 const express = require("express")
 const https = require("https")
 const mongoose = require("mongoose")
+require('dotenv').config(); 
 
 const app = express()
 app.use(express.static('public'))
 app.use(express.json())
 
-mongoose.connect("mongodb://192.168.1.100:27017/sqli_login")
+mongoose.connect(process.env.MONGODB_URI)
 
 const server = https.createServer({
     key: fs.readFileSync('key.pem'),
@@ -19,7 +20,7 @@ const utenteSchema = new mongoose.Schema({
     password: String
 });
 
-const User = mongoose.model('user', utenteSchema);
+const User = mongoose.model('nosqli_user', utenteSchema);
 
 app.post("/login", async (req, res) => {
     const {username, password} = req.body;

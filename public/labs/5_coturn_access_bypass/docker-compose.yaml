@@ -14,7 +14,6 @@ services:
     build: ./stunner
     image: stunner
     tty: true
-    entrypoint: ["sh","-c","tail -f /dev/null"]
     depends_on:
       - coturn
     networks:
@@ -22,8 +21,8 @@ services:
         ipv4_address: 10.0.0.4
 
   node:
-    container_name: node
-    build: ./node
+    container_name: node_coturn
+    build: ./node_coturn
     image: node_coturn
     tty: true
     networks:

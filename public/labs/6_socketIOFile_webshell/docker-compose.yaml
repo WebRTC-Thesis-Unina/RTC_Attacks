@@ -1,7 +1,7 @@
 services:
   node:
-    container_name: node
-    build: ./node
+    container_name: node_socketiofile
+    build: ./node_socketiofile
     image: node_socketiofile
     tty: true
     network_mode: "host"

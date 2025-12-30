@@ -4,7 +4,6 @@ FROM alpine:3.12
 
 ARG coturn_ver=4.5.1.3
 
-
 # Build and install Coturn.
 RUN apk update \
  && apk upgrade \
@@ -58,24 +57,9 @@ RUN apk update \
  # Preserve license file.
  && mkdir -p /usr/share/licenses/coturn/ \
  && cp /tmp/coturn/docs/LICENSE /usr/share/licenses/coturn/ \
- # Remove default config file.
- && rm -f /etc/coturn/turnserver.conf.default \
-    \
  # Cleanup unnecessary stuff.
  && apk del .tool-deps .build-deps \
  && rm -rf /var/cache/apk/* \
            /tmp/*
 
-COPY rootfs /
-
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
-             /usr/local/bin/detect-external-ip.sh \
- && ln -s /usr/local/bin/detect-external-ip.sh \
-          /usr/local/bin/detect-external-ip
-
-VOLUME ["/var/lib/coturn"]
-
-ENTRYPOINT ["docker-entrypoint.sh"]
-
-# CMD ["--log-file=stdout", "--external-ip=$(detect-external-ip)"]
-CMD ["--log-file=stdout"]
+CMD ["turnserver", "-v", "--user=username1:password1"]

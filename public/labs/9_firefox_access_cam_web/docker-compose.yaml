@@ -1,7 +1,7 @@
 services:
   node:
-    container_name: node
-    build: ./node
+    container_name: node_firefox
+    build: ./node_firefox
     image: node_firefox
     tty: true
     network_mode: "host"

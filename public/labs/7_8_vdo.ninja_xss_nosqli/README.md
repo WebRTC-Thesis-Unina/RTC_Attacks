@@ -14,17 +14,9 @@ As a first step, the containers are started with:
 docker compose up -d --build
 ```
 ### Step 1.1: Configure NoSQLi Database
-Assuming that MongoDB Compass is used as the NoSQL database on the host machine, a firewall rule must be created to allow the container to access the host. On Windows, this can be done with:
-```bash
-New-NetFirewallRule -DisplayName "MongoDB" -Direction Inbound -Protocol TCP -LocalPort 27017 -Action Allow
-```
-The MongoDB configuration file (```mongod.cfg```) is then modified to allow communication not only through the loopback address:
-```bash
-# network interfaces
-net:
-    port: 27017
-    bindIp: 0.0.0.0
-```
+Assuming that MongoDB Atlas is used as the NoSQL database.
+
+To allow the container to access the database, set the allowed IP address to ```0.0.0.0/0```.
 
 ### Step 1.2: Exploit the vulnerability
 The web page is accessed through a browser at: ```https://<IP_VM>```. In the vulnerable versions, the ```_bsontype``` attribute is ignored by server, and therefore by entering any username or password, access is granted.
