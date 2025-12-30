@@ -6,17 +6,21 @@ const { startInstance, stopInstance } = require('./ec2/ec2');
 const os = require('os');
 const SSH2Promise  = require("ssh2-promise");
 const fs = require("fs");
+const { stderr } = require("process");
 
 const app = express();
 app.use(express.static("public"))
 app.use(express.json())
 
-mongoose.connect("mongodb://192.168.1.100:27017/RTP_Attacks")
+require('dotenv').config(); 
+mongoose.connect(process.env.MONGODB_URI)
 
 const scenarioSchema = new mongoose.Schema({
     id: Number,
     name: String,
     description: String,
+    images: Array,
+    steps: String
 });
 
 const Scenario = mongoose.model("scenario", scenarioSchema);
@@ -47,7 +51,7 @@ app.get("/scenario/:id", async(req, res) => {
             return res.status(404).json({ error: "Scenario not found" });
         }
 
-        res.json({description: scenario.description});
+        res.json({name: scenario.name, description: scenario.description, steps: scenario.steps});
     } catch (error) {
         console.error(error);
     }
@@ -78,23 +82,24 @@ app.get("/make-start/:ip/:hostname/:key/:id", async(req, res) => {
         ip = getVMIP()
     }
 
-    exec(`make start SSH_IP=${ip} SSH_KEY=${key} SSH_HOSTNAME=${hostname}`, (err) => {
-        if(err){
-            res.status(500).json({ ok: false, message: "SSH key not found" });
-        }
-    })
-
     try {
         global.ssh = new SSH2Promise({
             host: ip,
             username: hostname,
-            privateKey: fs.readFileSync(key)
+            privateKey: fs.readFileSync("./ttyd/"+key)
         });
-    
+        
+        
         const ssh = global.ssh;
         await ssh.connect();
-    
-        await ssh.exec(`cd ~/RTC_Attacks/public/labs/${id} && make start`);
+        
+        await ssh.exec(`
+            cd ~/RTC_Attacks && \
+            make start SSH_IP=${ip} SSH_KEY=${key} SSH_HOSTNAME=${hostname} && \
+            cd ~/RTC_Attacks/public/labs/${id} && \
+            make start
+        `);
+
         res.json({ ok: true});
     } catch(err){
         console.error(err);
@@ -119,13 +124,17 @@ app.get("/make-stop/:id", async(req, res) => {
 })
 
 app.get("/make-stop-ttyd", async(req, res) => {
-    exec("make stop", (err) => {
-        if (err) {
-            console.error("Error:", err);
-            return res.status(500).json({ ok: false, error: err.message });
-        }
-        res.json({ ok: true });
-    }); 
+    
+    try {
+        const ssh = global.ssh;
+        await ssh.connect();
+
+        await ssh.exec("cd ~/RTC_Attacks && make stop")
+        res.json({ ok: true }); 
+    } catch (error) {
+        res.status(500).json({ ok: false, message: "Problem in SSH connection" });
+    }
+    
 })
 
 app.get("/start-ec2", async(req, res) => {
@@ -143,5 +152,19 @@ app.get("/stop-ec2", async(req, res) => {
         res.json({ ok: true, ip: info.publicIp });
     } catch (error) {
         console.error("Error: ", error);
+    }
+})
+
+app.get("/search", async(req, res) => {
+    const name = req.query.name;
+    try {
+        // Ricerca parziale
+        const scenarios = await Scenario.find({ name:{ $regex: name, $options: "i" }});
+        if (scenarios.length === 0) {
+            return res.status(404).json({ error: "Scenario not found" });
+        }
+        res.json(scenarios)
+    } catch (error){
+        console.error("Error:", err);
     }
 })

@@ -16,11 +16,11 @@
       height: 100%;
       margin: 0;
       padding: 0;
-      background: #e7e7e7;
+      background-color: rgba(4, 35, 57, 0.9);
       font-family: 'Segoe UI', sans-serif;
     }
 
-    a, b, code {
+    a, b {
       color:rgb(0, 111, 151)
     }
 
@@ -28,18 +28,58 @@
       color: rgb(0, 61, 97)
     }
 
+    code {
+      padding: 2px;
+      background-color: rgba(0, 111, 151, 0.603);
+      color: #fff;
+      border-radius: 5px;
+    }
+    
+    pre code {
+      background-color: transparent;  
+    }
+
     pre {
-      background-color: rgba(6, 49, 80, 0.678);
+      background-color: rgba(0, 111, 151, 0.603);
       padding: 10px;
       border-radius: 10px;
       color: rgb(255, 255, 255)
+    }
+
+    .sections {
+      font-size: larger;
+      color: #fff;
+    }
+
+    .sections i {
+      cursor: pointer;
+    }
+
+    .selected i {
+      color: rgba(48, 119, 170, 0.9);
+    }
+
+    .section-scenarios, .section-images {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .section-scenarios p, .section-images p {
+      padding: 5px;
+      background-color: #fff;
+      color: #1e3c72;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      position: absolute;
+      left: 3%;
     }
 
     .main-container {
       width: 100%;
       height: 100vh;
       display: grid;
-      grid-template-columns: 280px 1fr;
+      grid-template-columns: 50px 280px 1fr;
       transition: grid-template-columns .3s ease;
     }
 
@@ -48,11 +88,14 @@
     }
 
     .sidebar {
-      background: rgba(6, 49, 80, 0.9);
+      background: rgba(123, 197, 250, 0.552);
       color: white;
       padding: 20px 10px;
       transition: width .3s ease, padding .3s ease;
       overflow-y: auto;
+      border-top-left-radius: 50px;
+      border: 1px solid #fff;
+      border-bottom: none;
     }
 
     .sidebar.collapsed {
@@ -73,6 +116,27 @@
       opacity: 0;
     }
 
+    .search-bar {
+      background-color: transparent;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      border-bottom: 1px solid #fff;
+      color: #fff;
+      width: 80%;
+      padding: 5px;
+    }
+
+    .search-btn {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    
+    #search-icon {
+      color: #fff
+    }
+
     .menu-item {
       display: flex;
       align-items: center;
@@ -87,6 +151,18 @@
       overflow-y: auto;
       transition: opacity .3s ease;
     }
+    
+    .menu-item.search-item {
+      background: transparent;
+    }
+
+    .menu-item.search-item:hover {
+      background: transparent;
+    }
+
+    input:focus {
+      outline: none; 
+    }
 
     .menu-item:hover {
       background: rgba(255,255,255,0.15);
@@ -97,28 +173,11 @@
       gap: 0;
     }
 
-    .toggle-sidebar {
-      position: absolute;
-      left: 5px;
-      top: 5px;
-      width: 45px;
-      height: 45px;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      cursor: pointer;
-      z-index: 999;
-    }
-
-    .toggle-sidebar:hover {
-      background: rgb(4,40,65);
-    }
-
     .content {
       padding: 20px;
       overflow-y: auto;
+      background-color: rgba(123, 197, 250, 0.552);
+      border-top: 1px solid #fff;
     }
     
     .intro-wrapper {
@@ -135,6 +194,11 @@
     .content h1, .content h2, .content h3 {
       color: rgb(0, 111, 151);
       font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .content h1 {
+      color: #fff;
     }
 
     .intro-hero {
@@ -190,10 +254,31 @@
       margin-bottom: 0;
     }
 
+    .name-scenario-selected {
+      padding: 20px;
+    }
+
+    .description-scenario-selected, .images-container, .steps-scenario-selected {
+      padding: 20px;
+      background: white;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+      border-radius: 20px;
+      margin-bottom: 15px;
+    }
+
+    .images-container button {
+      border-radius: 10px;
+      color: white;
+      background-color: rgb(0, 111, 151);
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+
     .cloud-panel {
       height: calc(100vh - 50px);
       overflow-y: auto;
-      background-color: #3d6098bd;
+      background: linear-gradient(145deg, #1e3c72, #2a5298);
       padding: 20px;
       border-radius: 10px;
     }
@@ -303,7 +388,7 @@
     .main-container {
       grid-template-columns: 1fr;
     }
-    .sidebar, .toggle-sidebar {
+    .sidebar, .sections {
       display: none;
     }
   } 
@@ -311,11 +396,22 @@
 </head>
 <body>
   <div class="main-container">
-    <div class="toggle-sidebar">
-      <i class="fas fa-bars"></i>
+    <div class="sections">
+      <div class="section-scenarios selected">
+        <p style="display: none;">Scenarios</p>
+        <i class="fas fa-bug"></i>
+      </div>
+      <div class="section-images">
+        <p style="display: none;">Images</p>
+        <i class="far fa-image"></i>
+      </div>
     </div>
     <div class="sidebar">
       <img class="img-logo" src="logo.png" alt="">
+      <div class="menu-item search-item">
+        <input type="text" class="search-bar" placeholder="Search">
+        <button class="search-btn"><i class="fa fa-search" id="search-icon"></i></button>
+      </div>
     </div>
     <div class="content">
       <div class="intro-wrapper">
@@ -343,13 +439,17 @@
             <div class="intro-card">
               <div class="div-card">
                 <i class="fas fa-terminal"></i>
-                <h3>Hands-on</h3>
+                <h2>Hands-on</h2>
                 <p>Use a real terminal via browser and break things safely.</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- <h1 class="name-scenario-selected"></h1>
+      <div class="description-scenario-selected"></div>
+      <div class="images-container"></div>
+      <div class="steps-scenario-selected"></div> -->
       <div id="scenario-container"></div>
       <div class="top-controls">
         <button id="btn-start" class="btn"style="display:none;">Start VM</button>
@@ -382,8 +482,14 @@
     const startec2 = document.querySelector("#ec2-yes");
     const notstartec2 = document.querySelector("#ec2-no");
     const sidebar = document.querySelector('.sidebar');
-    const toggleBtn = document.querySelector('.toggle-sidebar');
     const mainContainer = document.querySelector('.main-container');
+    const searchbtn = document.querySelector('.search-btn');
+    const sectionScenarios = document.querySelector(".section-scenarios")
+    const sectionImages = document.querySelector(".section-images")
+    const pScenarios = document.querySelector(".section-scenarios p")
+    const pImages = document.querySelector(".section-images p")  
+    const btnScenarios = document.querySelector(".section-scenarios i")
+    const btnImages = document.querySelector(".section-images i")
     let isStartedEc2 = false;
     let ID = 0;
 
@@ -419,16 +525,50 @@
         console.error(err);
       })
 
-        vmStatus.textContent = "Running";
-        // Iframe
-        const iframe = document.createElement("iframe");
-        iframe.src = "http://localhost:7681";
-        iframe.style.width = "100%";
-        iframe.style.height = "70vh";
-        iframe.style.border = "1px solid #ccc";
-        iframe.style.borderRadius = "10px";
-        iframe.style.marginTop = "10px";
-        cloudPanel.appendChild(iframe);
+      vmStatus.textContent = "Running";
+      // Iframe
+      const iframe = document.createElement("iframe");
+      iframe.src = "http://localhost:7681";
+      iframe.style.width = "100%";
+      iframe.style.height = "70vh";
+      iframe.style.border = "1px solid #ccc";
+      iframe.style.borderRadius = "10px";
+      iframe.style.marginTop = "10px";
+      cloudPanel.appendChild(iframe);
+    }
+
+    function selectScenario(div) {
+      document.querySelector(".intro-wrapper").style.display = "none";
+        fetch(`/scenario/${div.id}`)
+        .then(res => res.json())
+        .then(data => {
+          ID = div.id
+          document.querySelector("#scenario-container").innerHTML = "";
+
+          document.getElementById("btn-start").style.display = "inline-block";
+          
+          const {name, description, steps} = data;
+          const contentDivName = document.createElement("h1");
+          contentDivName.classList.add("name-scenario-selected");
+          contentDivName.textContent = name;
+          contentDivName.id = "name_"+ ID
+          document.querySelector("#scenario-container").appendChild(contentDivName);
+
+          const contentDivDescription = document.createElement("div");
+          contentDivDescription.classList.add("description-scenario-selected");
+          const converterDescription = new showdown.Converter();
+          const htmlDescription = converterDescription.makeHtml(description);
+          contentDivDescription.innerHTML = htmlDescription;
+          contentDivDescription.id = "description_"+ ID
+          document.querySelector("#scenario-container").appendChild(contentDivDescription);
+
+          const contentDivSteps = document.createElement("div");
+          contentDivSteps.classList.add("steps-scenario-selected");
+          const converterSteps = new showdown.Converter();
+          const htmlSteps = converterSteps.makeHtml(steps);
+          contentDivSteps.innerHTML = htmlSteps;
+          document.querySelector("#scenario-container").appendChild(contentDivSteps);
+        })
     }
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -444,32 +584,63 @@
             div.textContent = name;
             
             div.addEventListener("click", () => {
-              document.querySelector(".intro-wrapper").style.display = "none";
-              fetch(`/scenario/${div.id}`)
-              .then(res => res.json())
-              .then(data => {
-                ID = div.id
-                document.getElementById("btn-start").style.display = "inline-block";
-                const {description} = data;
-                const contentDiv  = document.createElement("div");
-                const converter = new showdown.Converter();
-                const html = converter.makeHtml(description);
-                contentDiv.innerHTML = html;
-                document.querySelector("#scenario-container").innerHTML = "";
-                document.querySelector("#scenario-container").appendChild(contentDiv);
-              })
+              selectScenario(div);
             })
             document.querySelector(".sidebar").appendChild(div);
           });
         })
         .catch(err => console.error("Error:", err));
+    });    
+
+    btnScenarios.addEventListener("click", () => {
+      sectionImages.classList.remove("selected")
+      sectionScenarios.classList.add("selected")
+    })
+
+    btnScenarios.addEventListener("mouseover", () => {
+      pScenarios.style.display = "flex"
+    })
+    
+    btnScenarios.addEventListener("mouseout", () => {
+      pScenarios.style.display = "none";
     });
 
-    toggleBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("collapsed");
-      toggleBtn.classList.toggle("collapsed");
-      mainContainer.classList.toggle("sidebar-collapsed");
+    btnImages.addEventListener("click", () => {
+      sectionScenarios.classList.remove("selected")
+      sectionImages.classList.add("selected")
+    })
+
+    btnImages.addEventListener("mouseover", () => {
+      pImages.style.display = "flex"
+    })
+    
+    btnImages.addEventListener("mouseout", () => {
+      pImages.style.display = "none";
     });
+
+    searchbtn.addEventListener("click", () => {
+      const input = document.querySelector(".search-bar").value;
+      
+      if (input){
+        const items = sidebar.querySelectorAll(".menu-item:not(.search-item)");
+        items.forEach(item => item.remove());
+        fetch(`/search/?name=${encodeURIComponent(input)}`)
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(scenario => {
+            const div = document.createElement("div");
+            div.classList.add("menu-item");
+            div.textContent = scenario.name;
+            div.id = scenario.id; 
+            div.addEventListener("click", () => {
+              selectScenario(div)
+            })
+            sidebar.appendChild(div);
+          });
+        })
+        input = ""
+      }
+    })
     
     startMachine.addEventListener("click", () => {
       document.querySelector(".ec2-container").style.display = "inline-block";
