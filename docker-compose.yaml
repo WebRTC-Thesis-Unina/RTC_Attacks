@@ -1,7 +1,7 @@
 services:
   ttyd:
     container_name: ttyd
-    build: .
+    build: ./ttyd
     image: ttyd
     ports:
       - "7681:7681"
@@ -12,3 +12,28 @@ services:
     command: ["bash", "-c", "ttyd --writable bash -c 'ssh -i $SSH_KEY -o StrictHostKeyChecking=no $SSH_HOSTNAME@$SSH_IP; exec bash'"]
     stdin_open: true
     tty: true
+
+  collector:
+    container_name: collector
+    build: ./collector
+    image: collector
+    network_mode: host
+    privileged: true
+    pid: host
+    volumes:
+      - ./captures:/captures
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/bash
+    command: /opt/collector/run.sh
+
+  alert:
+    container_name: alert
+    build: ./alert
+    image: alert
+    command: python3 alert.py
+    volumes:
+      - ./alert/alert.py:/alert.py
+      - ./alert/alert.log:/alert.log:rw
+      - ./captures:/captures:ro

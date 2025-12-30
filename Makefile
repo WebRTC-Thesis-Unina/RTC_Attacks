@@ -5,7 +5,9 @@ SSH_IP ?=
 SSH_KEY ?=
 
 start:
-	@SSH_HOSTNAME=$(SSH_HOSTNAME) SSH_IP=$(SSH_IP) SSH_KEY=$(SSH_KEY) $(DOCKER_COMPOSE) up -d --build
+	@SSH_HOSTNAME=$(SSH_HOSTNAME) SSH_IP=$(SSH_IP) SSH_KEY=$(SSH_KEY) $(DOCKER_COMPOSE) up -d --build ttyd
+	@$(DOCKER_COMPOSE) up -d --build collector
 
 stop:
 	@$(DOCKER_COMPOSE) down
+	@$(DOCKER_COMPOSE) up -d --build alert

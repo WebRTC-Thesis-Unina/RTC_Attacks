@@ -24,3 +24,4 @@ node_modules/
 key_pem.pem
 key_rsa.pem
 .vscode
+captures/
