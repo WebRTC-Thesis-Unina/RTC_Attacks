@@ -7,7 +7,7 @@ services:
 
   sipp101:
     container_name: sipp101
-    build: ./sipp101
+    build: ./sipp
     image: sipp101
     tty: true
     depends_on:
