@@ -1,12 +1,10 @@
 const express = require("express");
 const http = require('http');
 const mongoose = require('mongoose');
-const { exec } = require("child_process");
 const { startInstance, stopInstance } = require('./ec2/ec2');
 const os = require('os');
 const SSH2Promise  = require("ssh2-promise");
 const fs = require("fs");
-const { stderr } = require("process");
 
 const app = express();
 app.use(express.static("public"))

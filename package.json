@@ -2,7 +2,6 @@
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.958.0",
     "aws-sdk": "^2.1692.0",
-    "child_process": "^1.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",

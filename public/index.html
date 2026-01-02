@@ -8,7 +8,7 @@
   <style>
     * {
       scrollbar-width: thin;
-      scrollbar-color: rgb(1, 102, 160) #e7e7e7;
+      scrollbar-color: rgb(1, 102, 160) transparent;
       font-family: "Source Sans Pro", sans-serif;
     }
 
@@ -59,27 +59,11 @@
       color: rgba(48, 119, 170, 0.9);
     }
 
-    .section-scenarios, .section-images {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    .section-scenarios p, .section-images p {
-      padding: 5px;
-      background-color: #fff;
-      color: #1e3c72;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      position: absolute;
-      left: 3%;
-    }
-
     .main-container {
       width: 100%;
       height: 100vh;
       display: grid;
-      grid-template-columns: 50px 280px 1fr;
+      grid-template-columns: 280px 1fr;
       transition: grid-template-columns .3s ease;
     }
 
@@ -93,9 +77,7 @@
       padding: 20px 10px;
       transition: width .3s ease, padding .3s ease;
       overflow-y: auto;
-      border-top-left-radius: 50px;
-      border: 1px solid #fff;
-      border-bottom: none;
+      border-right: 1px solid;
     }
 
     .sidebar.collapsed {
@@ -177,7 +159,6 @@
       padding: 20px;
       overflow-y: auto;
       background-color: rgba(123, 197, 250, 0.552);
-      border-top: 1px solid #fff;
     }
     
     .intro-wrapper {
@@ -396,16 +377,6 @@
 </head>
 <body>
   <div class="main-container">
-    <div class="sections">
-      <div class="section-scenarios selected">
-        <p style="display: none;">Scenarios</p>
-        <i class="fas fa-bug"></i>
-      </div>
-      <div class="section-images">
-        <p style="display: none;">Images</p>
-        <i class="far fa-image"></i>
-      </div>
-    </div>
     <div class="sidebar">
       <img class="img-logo" src="logo.png" alt="">
       <div class="menu-item search-item">
@@ -439,17 +410,13 @@
             <div class="intro-card">
               <div class="div-card">
                 <i class="fas fa-terminal"></i>
-                <h2>Hands-on</h2>
+                <h3>Hands-on</h3>
                 <p>Use a real terminal via browser and break things safely.</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- <h1 class="name-scenario-selected"></h1>
-      <div class="description-scenario-selected"></div>
-      <div class="images-container"></div>
-      <div class="steps-scenario-selected"></div> -->
       <div id="scenario-container"></div>
       <div class="top-controls">
         <button id="btn-start" class="btn"style="display:none;">Start VM</button>
@@ -484,12 +451,7 @@
     const sidebar = document.querySelector('.sidebar');
     const mainContainer = document.querySelector('.main-container');
     const searchbtn = document.querySelector('.search-btn');
-    const sectionScenarios = document.querySelector(".section-scenarios")
-    const sectionImages = document.querySelector(".section-images")
-    const pScenarios = document.querySelector(".section-scenarios p")
-    const pImages = document.querySelector(".section-images p")  
-    const btnScenarios = document.querySelector(".section-scenarios i")
-    const btnImages = document.querySelector(".section-images i")
+    let nameScenario = "";
     let isStartedEc2 = false;
     let ID = 0;
 
@@ -502,6 +464,27 @@
       6: "6_socketIOFile_webshell",
       7: "7_8_vdo.ninja_xss_nosqli",
       8: "9_firefox_access_cam_web",
+    }
+
+    function getAllScenarios() {
+      fetch("/scenarios")
+        .then(res => res.json())
+        .then(data => {
+          const {names, ids} = data;
+
+          names.forEach((name, index) => {
+            const div = document.createElement("div");
+            div.classList.add("menu-item");
+            div.id = ids[index];
+            div.textContent = name;
+            
+            div.addEventListener("click", () => {
+              selectScenario(div);
+            })
+            document.querySelector(".sidebar").appendChild(div);
+          });
+        })
+        .catch(err => console.error("Error:", err));
     }
 
     function configContainer(){
@@ -548,6 +531,7 @@
           document.getElementById("btn-start").style.display = "inline-block";
           
           const {name, description, steps} = data;
+          nameScenario = name;
           const contentDivName = document.createElement("h1");
           contentDivName.classList.add("name-scenario-selected");
           contentDivName.textContent = name;
@@ -572,51 +556,13 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      fetch("/scenarios")
-        .then(res => res.json())
-        .then(data => {
-          const {names, ids} = data;
-
-          names.forEach((name, index) => {
-            const div = document.createElement("div");
-            div.classList.add("menu-item");
-            div.id = ids[index];
-            div.textContent = name;
-            
-            div.addEventListener("click", () => {
-              selectScenario(div);
-            })
-            document.querySelector(".sidebar").appendChild(div);
-          });
-        })
-        .catch(err => console.error("Error:", err));
+      getAllScenarios();
     });    
 
-    btnScenarios.addEventListener("click", () => {
-      sectionImages.classList.remove("selected")
-      sectionScenarios.classList.add("selected")
-    })
-
-    btnScenarios.addEventListener("mouseover", () => {
-      pScenarios.style.display = "flex"
-    })
-    
-    btnScenarios.addEventListener("mouseout", () => {
-      pScenarios.style.display = "none";
-    });
-
-    btnImages.addEventListener("click", () => {
-      sectionScenarios.classList.remove("selected")
-      sectionImages.classList.add("selected")
-    })
-
-    btnImages.addEventListener("mouseover", () => {
-      pImages.style.display = "flex"
-    })
-    
-    btnImages.addEventListener("mouseout", () => {
-      pImages.style.display = "none";
-    });
+    const intro = document.querySelector(".intro-hero");
+    const name = document.querySelector(".name-scenario-selected");
+    const desc = document.querySelector(".description-scenario-selected");
+    const steps = document.querySelector(".steps-scenario-selected");
 
     searchbtn.addEventListener("click", () => {
       const input = document.querySelector(".search-bar").value;
