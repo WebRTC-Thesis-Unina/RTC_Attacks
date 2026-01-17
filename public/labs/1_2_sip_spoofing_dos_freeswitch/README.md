@@ -9,11 +9,6 @@ In this scenario, the first attack consists of sending a SIP Message from an unr
 The vulnerability affects the SIP server, which accepts unauthenticated messages. 
 Because the server does not verify that the sender is registered (i.e. ```auth-messages = false``` by default), the spoofed message will be accepted — resulting in the spoofed user (e.g. ```UniCredit```) appearing to send the message.
 
-The containers are started with:
-```bash
-docker compose up -d --build
-```
-
 ### Step 1.1: Register a Linphone
 For both attacks, the Linphone application is used. For the first scenario, a user must be registered. FreeSWITCH provides default users ranging from <b>1000</b> to <b>1020</b> (it is recommended to use one of these).
 The username corresponds to the chosen value, while the password is <b>1234</b>.

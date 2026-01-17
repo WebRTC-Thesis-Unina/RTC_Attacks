@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
   <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
   <style>
     * {
       scrollbar-width: thin;
@@ -20,12 +21,8 @@
       font-family: 'Segoe UI', sans-serif;
     }
 
-    a, b {
-      color:rgb(0, 111, 151)
-    }
-
-    a:hover {
-      color: rgb(0, 61, 97)
+    b, strong {
+      color:rgba(0, 111, 151, 0.603);
     }
 
     code {
@@ -46,17 +43,8 @@
       color: rgb(255, 255, 255)
     }
 
-    .sections {
-      font-size: larger;
+    input::placeholder {
       color: #fff;
-    }
-
-    .sections i {
-      cursor: pointer;
-    }
-
-    .selected i {
-      color: rgba(48, 119, 170, 0.9);
     }
 
     .main-container {
@@ -172,8 +160,8 @@
       border-radius: 10px;
     }
 
-    .content h1, .content h2, .content h3 {
-      color: rgb(0, 111, 151);
+    .content h1, .content h2, .content h3, .content h4 {
+      color: #1e3c72;
       font-weight: 700;
       margin-bottom: 20px;
     }
@@ -187,14 +175,14 @@
       border-radius: 20px;
       padding: 60px 50px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-      max-width: 900px;
+      max-width: 800px;
       width: 100%;
       text-align: center;
     }
 
     .intro-hero h1 {
       font-size: 2.4rem;
-      color: rgb(0, 111, 151);
+      color: #1e3c72;
       margin-bottom: 15px;
     }
 
@@ -223,7 +211,7 @@
 
     .intro-card i {
       font-size: 2.2rem;
-      color: rgb(0, 111, 151);
+      color: #1e3c72;
       margin-bottom: 15px;
     }
 
@@ -239,7 +227,7 @@
       padding: 20px;
     }
 
-    .description-scenario-selected, .images-container, .steps-scenario-selected {
+    .description-scenario-selected, .container-scenario-selected, .steps-scenario-selected, .logs-selected {
       padding: 20px;
       background: white;
       box-shadow: 0 20px 40px rgba(0,0,0,0.08);
@@ -247,13 +235,13 @@
       margin-bottom: 15px;
     }
 
-    .images-container button {
-      border-radius: 10px;
-      color: white;
-      background-color: rgb(0, 111, 151);
-      border: none;
-      padding: 10px;
-      cursor: pointer;
+    .logs-selected pre {
+      max-height: 300px;
+    }
+
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
 
     .cloud-panel {
@@ -268,6 +256,16 @@
       color: #fff;
     }
 
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-row p {
+      margin: 0;
+    }
+
     .top-controls {
       position: fixed;
       top: 40px;
@@ -277,12 +275,13 @@
       z-index: 9999;
     }
 
-    .btn {
+    .btn, .btn-build, .btn-build-all {
       padding: 10px 18px;
       border-radius: 10px;
       border: none;
       color: white;
       cursor: pointer;
+      background: #1e3c72;
     }
 
     #btn-start, #ec2-yes {
@@ -301,8 +300,14 @@
       background: #a62f2f;
     }
 
-    .cloud-panel.hidden {
+    .hidden {
       display: none;
+    }
+
+    .cloud-panel .btn {
+      display: none;
+      color: #1e3c72;
+      background-color: #fff;
     }
 
     #vm-status {
@@ -334,42 +339,11 @@
     background-color: currentColor;
   }
 
-  .ec2-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-  }
-
-  .ec2-card {
-    background: linear-gradient(145deg, #1e3c72, #2a5298);
-    color: #fff;
-    padding: 30px 40px;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    max-width: 400px;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .ec2-card p {
-    margin-bottom: 25px;
-    font-size: 1rem;
-    line-height: 1.4;
-  }
-
-  .ec2-btn {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-  }
-
   @media (max-width: 900px) {
     .main-container {
       grid-template-columns: 1fr;
     }
-    .sidebar, .sections {
+    .sidebar {
       display: none;
     }
   } 
@@ -381,7 +355,7 @@
       <img class="img-logo" src="logo.png" alt="">
       <div class="menu-item search-item">
         <input type="text" class="search-bar" placeholder="Search">
-        <button class="search-btn"><i class="fa fa-search" id="search-icon"></i></button>
+        <i class="fa fa-search" id="search-icon"></i>
       </div>
     </div>
     <div class="content">
@@ -396,21 +370,14 @@
             <div class="intro-card">
               <div class="div-card">
                 <i class="fas fa-bug"></i>
-                <h3>Real-Time Vulnerabilities</h3>
+                <h4>Real-Time Vulnerabilities</h4>
                 <p>Explore SIP, RTP, WebRTC, XSS, NoSQLi and more.</p>
               </div>
             </div>
             <div class="intro-card">
               <div class="div-card">
-                <i class="fas fa-cloud"></i>
-                <h3>Cloud or Local</h3>
-                <p>Run scenarios locally or spin up an EC2 instance.</p>
-              </div>
-            </div>
-            <div class="intro-card">
-              <div class="div-card">
                 <i class="fas fa-terminal"></i>
-                <h3>Hands-on</h3>
+                <h4>Hands-on</h4>
                 <p>Use a real terminal via browser and break things safely.</p>
               </div>
             </div>
@@ -425,36 +392,39 @@
       <div id="vm-container">
         <div class="cloud-panel hidden">
           <h3>Virtual Machine</h3>
-          <p>Status: <span id="vm-status">Unknown</span></p>
+          <div class="status-row">
+            <p>Status: <span id="vm-status">Unknown</span></p>
+            <button class="btn">New terminal <i class="fa fa-plus"></i></button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="ec2-container" style="display:none;">
-    <div class="ec2-card">
-      <p>Do you want to start an EC2 instance or continue on your local machine?</p>
-      <div class="ec2-btn">
-        <button id="ec2-yes" class="btn">Yes, start!</button>
-        <button id="ec2-no" class="btn">No, continue!</button>
-      </div>
-    </div>
-  </div>
   <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script>
     const startMachine = document.querySelector("#btn-start");
     const stopMachine = document.querySelector("#btn-stop");
     const vmStatus = document.querySelector("#vm-status");
     const vmContainer = document.querySelector("#vm-container");
     const cloudPanel = document.querySelector(".cloud-panel");
-    const startec2 = document.querySelector("#ec2-yes");
-    const notstartec2 = document.querySelector("#ec2-no");
+    const addTerminal = document.querySelector(".cloud-panel .btn");
     const sidebar = document.querySelector('.sidebar');
     const mainContainer = document.querySelector('.main-container');
     const searchbtn = document.querySelector('.search-btn');
+    const contentDivContainers = document.createElement("div");
+    const btnAllContainers = document.createElement("button");
+    const contentContainersh3 = document.createElement("h3");
+    let selectedMachine = false;
     let nameScenario = "";
-    let isStartedEc2 = false;
     let ID = 0;
-
+    const notyf = new Notyf({
+      position: {
+        x: 'center',
+        y: 'top',
+      },
+      duration: 2000, 
+    });
     const folders = {
       1: "1_2_sip_spoofing_dos_freeswitch",
       2: "1_2_sip_spoofing_dos_freeswitch",
@@ -484,75 +454,190 @@
             document.querySelector(".sidebar").appendChild(div);
           });
         })
-        .catch(err => console.error("Error:", err));
-    }
-
-    function configContainer(){
-      document.querySelector(".ec2-container").style.display = "none";
-
-      cloudPanel.classList.remove("hidden");
-      startMachine.style.display = "none";
-      stopMachine.style.display = "inline-block";
-
-      vmStatus.textContent = "Starting...";
-      vmStatus.className = "";
-      vmStatus.classList.add("running");
-      
-      cloudPanel.scrollIntoView({ behavior: "smooth" });
-    }
-
-    async function startTTYD(hostname, ip, key) {
-      await fetch(`/make-start/${ip}/${hostname}/${key}/${folders[ID]}`)
-      .then(res => res.json())
-      .catch((err) => {
-        console.error(err);
-      })
-
-      vmStatus.textContent = "Running";
-      // Iframe
-      const iframe = document.createElement("iframe");
-      iframe.src = "http://localhost:7681";
-      iframe.style.width = "100%";
-      iframe.style.height = "70vh";
-      iframe.style.border = "1px solid #ccc";
-      iframe.style.borderRadius = "10px";
-      iframe.style.marginTop = "10px";
-      cloudPanel.appendChild(iframe);
+        .catch(err => notyf.error(`Error: ${err}`));
     }
 
     function selectScenario(div) {
       document.querySelector(".intro-wrapper").style.display = "none";
-        fetch(`/scenario/${div.id}`)
-        .then(res => res.json())
-        .then(data => {
-          ID = div.id
-          document.querySelector("#scenario-container").innerHTML = "";
+      fetch(`/scenario/${div.id}`)
+      .then(res => res.json())
+      .then(data => {
+        ID = div.id
+        document.querySelector("#scenario-container").innerHTML = "";
+        document.querySelector(".content").scrollTo({ top: 0, behavior: "smooth" });   
+        contentDivContainers.innerHTML = "";
+        
+        contentDivContainers.classList.add("container-scenario-selected");
+        contentDivContainers.id = "container-scenario-selected-" + ID;
+        contentContainersh3.textContent =  "Images"
+        btnAllContainers.classList.add("btn-build-all");
+        btnAllContainers.id = "btn-all-scenario-" + ID;
+        btnAllContainers.textContent = "Build ALL images";
+        
+        if(startMachine.style.display === "inline-block"){
+          startMachine.style.display = "none"
+        }
 
-          document.getElementById("btn-start").style.display = "inline-block";
-          
-          const {name, description, steps} = data;
-          nameScenario = name;
-          const contentDivName = document.createElement("h1");
-          contentDivName.classList.add("name-scenario-selected");
-          contentDivName.textContent = name;
-          contentDivName.id = "name_"+ ID
-          document.querySelector("#scenario-container").appendChild(contentDivName);
-
-          const contentDivDescription = document.createElement("div");
-          contentDivDescription.classList.add("description-scenario-selected");
-          const converterDescription = new showdown.Converter();
-          const htmlDescription = converterDescription.makeHtml(description);
-          contentDivDescription.innerHTML = htmlDescription;
-          contentDivDescription.id = "description_"+ ID
-          document.querySelector("#scenario-container").appendChild(contentDivDescription);
-
-          const contentDivSteps = document.createElement("div");
-          contentDivSteps.classList.add("steps-scenario-selected");
-          const converterSteps = new showdown.Converter();
-          const htmlSteps = converterSteps.makeHtml(steps);
-          contentDivSteps.innerHTML = htmlSteps;
-          document.querySelector("#scenario-container").appendChild(contentDivSteps);
+        const {name, description, steps} = data;
+        nameScenario = name;
+        const contentDivName = document.createElement("h1");
+        contentDivName.classList.add("name-scenario-selected");
+        contentDivName.textContent = name;
+        contentDivName.id = "name_"+ ID
+        document.querySelector("#scenario-container").appendChild(contentDivName);
+        
+        fetch("/images-to-build", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            id: ID
+          })
         })
+        .then(res => res.json())
+        .then(data  => {
+          const containers = data.containers;
+
+          if (containers.length === 0) {
+            notyf.success("No images to build");
+            setTimeout(() => document.querySelector("#container-scenario-selected-"+ ID).remove(), 1000);
+            setTimeout(() => document.getElementById("btn-start").style.display = "inline-block", 1000);
+            return;
+          }
+          
+          containers.forEach((container, index) => {
+            const preContainer = document.createElement("pre")
+            preContainer.textContent = container
+            preContainer.style.display = "flex"
+            preContainer.style.justifyContent = "space-between";
+            preContainer.style.alignItems = "center";
+            preContainer.classList.add("image_container");
+            preContainer.id = "image_" + ID
+            const btnOneBuild = document.createElement("button");
+            btnOneBuild.classList.add("btn-build")
+            btnOneBuild.textContent = "Build"
+            btnOneBuild.id = "btn_" + index
+            preContainer.appendChild(btnOneBuild)
+            contentDivContainers.appendChild(preContainer);
+
+            btnOneBuild.addEventListener("click", async() => {
+              try {
+                const res = await fetch("/build", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    image: container,
+                    folder: folders[ID]
+                  })
+                })
+              
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                
+                const pre = document.createElement("pre")
+                const code = document.createElement("code")
+
+                while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  
+                  const textChunk = decoder.decode(value, { stream: true });
+                  code.textContent += textChunk
+                  pre.appendChild(code)
+                  document.querySelector(".logs-selected").appendChild(pre)
+                }
+
+                notyf.success(`Image ${container} have been build`);
+                preContainer.classList.add("fade-out");
+                setTimeout(() => {
+                  preContainer.remove()
+                  if (document.querySelectorAll(".image_container").length === 0){
+                    document.querySelector("#container-scenario-selected-"+ ID).classList.add("fade-out");
+                    setTimeout(() => document.querySelector("#container-scenario-selected-"+ ID).remove(), 400);
+                    document.getElementById("btn-start").style.display = "inline-block";
+                  }
+                }, 400);
+              } catch (err) {
+                notyf.error("Error: " + err);
+              } 
+            })
+          });
+          
+          btnAllContainers.addEventListener("click", async() => {
+            let elements = Array.from(document.querySelectorAll(".image_container"))
+            .map(el => el.childNodes[0].textContent.trim()).join(" ");
+            
+            try {
+              const res = await fetch("/build-all", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  folder: folders[ID],
+                  elements: elements
+                })
+              })
+            
+              const reader = res.body.getReader();
+              const decoder = new TextDecoder();
+              
+              const pre = document.createElement("pre")
+              const code = document.createElement("code")
+
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                const textChunk = decoder.decode(value, { stream: true });
+                code.textContent += textChunk
+                pre.appendChild(code)
+                document.querySelector(".logs-selected").appendChild(pre)
+              }
+
+              notyf.success("All images have been build");
+              document.querySelector("#container-scenario-selected-"+ ID).classList.add("fade-out");
+              setTimeout(() => document.querySelector("#container-scenario-selected-"+ ID).remove(), 400);
+              document.getElementById("btn-start").style.display = "inline-block";
+            } catch (err) {
+              notyf.error("Error: " + err);
+            } 
+          })
+          contentDivContainers.appendChild(btnAllContainers);
+        })
+
+        contentDivContainers.appendChild(contentContainersh3);
+        document.querySelector("#scenario-container").appendChild(contentDivContainers);
+
+        const contentDivLogs = document.createElement("div");
+        contentDivLogs.classList.add("logs-selected");
+        contentDivLogs.id = "logs-selected-" + ID;
+        const h3Log = document.createElement("h3");
+        h3Log.textContent = "Logs"
+        contentDivLogs.appendChild(h3Log)
+        document.querySelector("#scenario-container").appendChild(contentDivLogs);
+
+        const contentDivDescription = document.createElement("div");
+        contentDivDescription.classList.add("description-scenario-selected");
+        const converterDescription = new showdown.Converter();
+        const htmlDescription = converterDescription.makeHtml(description);
+        contentDivDescription.innerHTML = htmlDescription;
+        contentDivDescription.id = "description_"+ ID
+        document.querySelector("#scenario-container").appendChild(contentDivDescription);
+
+        const contentDivSteps = document.createElement("div");
+        contentDivSteps.classList.add("steps-scenario-selected");
+        const converterSteps = new showdown.Converter();
+        const htmlSteps = converterSteps.makeHtml(steps);
+        contentDivSteps.innerHTML = htmlSteps;
+        document.querySelector("#scenario-container").appendChild(contentDivSteps);
+        })
+        .catch((err) => {
+          notyf.error("Error: " + err);
+        })  
     }
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -563,96 +648,132 @@
     const name = document.querySelector(".name-scenario-selected");
     const desc = document.querySelector(".description-scenario-selected");
     const steps = document.querySelector(".steps-scenario-selected");
+    const input = document.querySelector(".search-bar");
 
-    searchbtn.addEventListener("click", () => {
-      const input = document.querySelector(".search-bar").value;
-      
-      if (input){
-        const items = sidebar.querySelectorAll(".menu-item:not(.search-item)");
-        items.forEach(item => item.remove());
-        fetch(`/search/?name=${encodeURIComponent(input)}`)
-        .then(res => res.json())
-        .then(data => {
-          data.forEach(scenario => {
-            const div = document.createElement("div");
-            div.classList.add("menu-item");
-            div.textContent = scenario.name;
-            div.id = scenario.id; 
-            div.addEventListener("click", () => {
-              selectScenario(div)
-            })
-            sidebar.appendChild(div);
-          });
-        })
-        input = ""
-      }
-    })
-    
-    startMachine.addEventListener("click", () => {
-      document.querySelector(".ec2-container").style.display = "inline-block";
-    })
-    
-    startec2.addEventListener("click", async() => {
-      isStartedEc2 = true;
-      configContainer();
-      await fetch("/start-ec2")
+    input.addEventListener("input", () => {
+      const items = sidebar.querySelectorAll(".menu-item:not(.search-item)");
+      items.forEach(item => item.remove());
+      fetch(`/search/?name=${encodeURIComponent(input.value)}`)
       .then(res => res.json())
-      .then(async (data) => {
-        let ip = data.ip;
-        let region = data.region;
-
-        const ipString = ip.replace(/\./g, "-");
-        const dns = "ec2-" + ipString + "."+ region +".compute.amazonaws.com"
-        
-        const hostname = "ubuntu"
-        const key = "key_pem.pem"
-
-        startTTYD(hostname, dns, key); 
+      .then(data => {
+        data.forEach(scenario => {
+          const div = document.createElement("div");
+          div.classList.add("menu-item");
+          div.textContent = scenario.name;
+          div.id = scenario.id; 
+          div.addEventListener("click", () => {
+            selectScenario(div)
+          })
+          sidebar.appendChild(div);
+        });
       })
-      .catch(err => {
-        console.error(err);
-      });
     })
+    
+    startMachine.addEventListener("click", async () => {        
+      cloudPanel.classList.remove("hidden");
+      startMachine.style.display = "none";
+      stopMachine.style.display = "inline-block";
 
-    notstartec2.addEventListener("click", async () => {
-      const hostname = "none"
-      const ip = "none"
-      const key = "key_rsa.pem"
+      vmStatus.textContent = "Starting...";
+      vmStatus.className = "";
+      vmStatus.classList.add("running");
       
-      isStartedEc2 = false;
-      configContainer();
-      await startTTYD(hostname, ip, key);
+      cloudPanel.scrollIntoView({ behavior: "smooth" });
+
+      const res = await fetch("/make-start", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          folder: folders[ID]
+        })
+      })
+      
+      try{
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        
+        const pre = document.createElement("pre")
+        const code = document.createElement("code")
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const textChunk = decoder.decode(value, { stream: true });
+          code.textContent += textChunk
+          pre.appendChild(code)
+          document.querySelector(".logs-selected").appendChild(pre)
+        }
+      
+        vmStatus.textContent = "Running";
+        
+        // Iframe
+        const iframe = document.createElement("iframe");
+        iframe.src = "http://localhost:7681";
+        iframe.style.width = "100%";
+        iframe.style.height = "70vh";
+        iframe.style.border = "1px solid #ccc";
+        iframe.style.borderRadius = "10px";
+        iframe.style.marginTop = "10px";
+        cloudPanel.appendChild(iframe);
+      }
+      catch(err) {
+        vmStatus.textContent = "Error: " + err
+      } 
+
+      addTerminal.style.display = "inline-block";
     })
 
     stopMachine.addEventListener("click", async() => {
+      addTerminal.style.display = "none";
       vmStatus.textContent = "Stopping...";
       vmStatus.className = "";
       vmStatus.classList.add("stopped");
       cloudPanel.querySelector("iframe").remove();
+
+      const res = await fetch("/make-stop", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          folder: folders[ID]
+        })
+      })
       
-      await fetch(`/make-stop/${folders[ID]}`)
-      .catch(err => {
-        console.error(err);
-      });
+      try{
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        
+        const pre = document.createElement("pre")
+        const code = document.createElement("code")
 
-      if(isStartedEc2){
-        await fetch("/stop-ec2")
-        .then(res => res.json())
-        .catch(err => {
-          console.error(err);
-        });
-      } 
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const textChunk = decoder.decode(value, { stream: true });
+          code.textContent += textChunk
+          pre.appendChild(code)
+          document.querySelector(".logs-selected").appendChild(pre)
+        }
 
-      await fetch("/make-stop-ttyd")
-      .then(() => {
         cloudPanel.classList.add("hidden");
         startMachine.style.display = "inline-block";
         stopMachine.style.display = "none"; 
-      })
-      .catch(err => {
-        console.error(err);
-      });
+        notyf.success("Containers stopped");
+
+        document.querySelector(".content").scrollTo({ top: 0, behavior: "smooth" });
+      }catch(err) {
+        notyf.error("Error: " + err);
+      }
     });
+
+    addTerminal.addEventListener("click", () => {
+      window.open("http://localhost:7681")
+    })
   </script>
 </body>
 </html>

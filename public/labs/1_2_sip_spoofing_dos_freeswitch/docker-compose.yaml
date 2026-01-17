@@ -10,10 +10,7 @@ services:
     container_name: attacker
     build: ./attacker
     image: attacker
-    command: /bin/sh
     tty: true
-    depends_on:
-    - freeswitch
     volumes:
       - ./attacker/spoofing.py:/spoofing.py
       - ./attacker/dos-sipflood.py:/dos-sipflood.py

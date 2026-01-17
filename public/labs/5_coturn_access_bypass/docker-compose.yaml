@@ -3,36 +3,17 @@ services:
     container_name: coturn
     build: ./coturn
     image: coturn
-    volumes:
-      - ./coturn/etc:/etc
-    networks:
-      server_network:
-        ipv4_address: 10.0.0.10
-
+    network_mode: "host"
+    command: turnserver -v --user=username1:password1
   stunner:
     container_name: stunner
     build: ./stunner
     image: stunner
     tty: true
-    depends_on:
-      - coturn
-    networks:
-      server_network:
-        ipv4_address: 10.0.0.4
-
-  node:
-    container_name: node_coturn
-    build: ./node_coturn
-    image: node_coturn
-    tty: true
-    networks:
-      server_network:
-        ipv4_address: 10.0.0.3
-
-networks:
-  server_network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.0.0.0/24
-          gateway: 10.0.0.1
+    command: > 
+      stunner socks 
+      --turnserver 192.168.1.50:3478 
+      --protocol tcp 
+      --username username1 
+      --password password1 
+      --listen 0.0.0.0:9999

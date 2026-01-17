@@ -61,5 +61,3 @@ RUN apk update \
  && apk del .tool-deps .build-deps \
  && rm -rf /var/cache/apk/* \
            /tmp/*
-
-CMD ["turnserver", "-v", "--user=username1:password1"]

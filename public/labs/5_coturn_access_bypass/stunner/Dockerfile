@@ -15,5 +15,3 @@ RUN addgroup -S stunner && adduser -S -G stunner stunner
 COPY --from=builder /usr/local/bin/stunner /usr/local/bin/stunner
 USER stunner
 WORKDIR /home/stunner
-
-CMD [ "stunner", "socks", "--turnserver", "10.0.0.10:3478", "--protocol", "tcp", "--username", "username1", "--password", "password1", "--listen", "0.0.0.0:9999" ]

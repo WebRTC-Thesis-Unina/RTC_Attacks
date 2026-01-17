@@ -5,3 +5,23 @@ services:
     image: node_firefox
     tty: true
     network_mode: "host"
+
+  gophish:
+    container_name: gophish
+    build: ./gophish
+    image: gophish
+    tty: true
+    network_mode: "host"
+
+  firefox:
+    container_name: firefox
+    build: ./firefox
+    image: firefox
+    tty: true
+    network_mode: "host"
+    environment:
+    - DISPLAY=${DISPLAY}
+    - PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native
+    volumes:
+    - /tmp/.X11-unix:/tmp/.X11-unix
+    - ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native

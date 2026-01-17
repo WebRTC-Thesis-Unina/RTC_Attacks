@@ -7,14 +7,10 @@
 In this scenario, it is possible to upload a malicious javaScript file to execute a webshell on the victim machine. Once this is done, the attacker loads the python ransomware file from their HTTP server and executes it through the webshell. The effect is the encryption of the files on the victim machine.
 
 ## How to reproduce the issue
-As a first step, the containers are started with:
-```bash
-docker compose up -d --build
-```
-The web page is accessed through a browser (```http://<IP_VM>:8080```).
+As a first step, access ```http://<IP_VM>:8080```.
 
 ### Step 1: Upload ```webshell.js``` file
-Next, the file ```webshell.js```is uploaded; once uploaded, a communication channel with the victim machine is established. This is possible because, in the vulnerable versions, the server doesn't check the file format and saves it of victime machine.
+Upload the ```webshell.js```file, located in the ```public/labs/6_socketIOFile``` path. Once uploaded, a communication channel with the victim machine is established. This is possible because, in the vulnerable versions, the server doesn't check the file format and saves it of victime machine.
 
 ### Step 2: Download ```ransomware.py``` file from the attacker web server
 An attacker-controlled web server is then started, from which the file ```ransomware.py``` can be downloaded:

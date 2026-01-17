@@ -10,10 +10,7 @@ services:
     build: ./sipp
     image: sipp101
     tty: true
-    depends_on:
-      - kamailio
     volumes:
       - ./sipp/xml/registration101.xml:/sipp/xml/registration101.xml
       - ./sipp/xml/call102.xml:/sipp/xml/call102.xml
       - ./sipp/xml/overflow.xml:/sipp/xml/overflow.xml
-    command: -sn uas

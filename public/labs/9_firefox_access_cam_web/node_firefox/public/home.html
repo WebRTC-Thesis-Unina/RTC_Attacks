@@ -6,12 +6,12 @@
     <title>Iframe Capture</title>
 </head>
 <body>
-    <video id="video" autoplay muted playsinline></video>
+    <audio id="audio"></audio>
     <script>
         async function startCapture() {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-            const video = document.getElementById("video");
-            video.srcObject = stream;
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const audio = document.getElementById("audio");
+            audio.srcObject = stream;
 
             let mediaRecorder;
             let audioChunks = [];
@@ -28,18 +28,11 @@
                         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
                         const audioBase64 = await blobToBase64(audioBlob);
 
-                        const canvas = document.createElement("canvas");
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        const screenshotBase64 = canvas.toDataURL("image/png");
-
                         try {
                             await fetch("/save-capture", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ audio: audioBase64, image: screenshotBase64 })
+                                body: JSON.stringify({ audio: audioBase64 })
                             });
                         } catch(err) {
                             console.error("Errore invio al server:", err);

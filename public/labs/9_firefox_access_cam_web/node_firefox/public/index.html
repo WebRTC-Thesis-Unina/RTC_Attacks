@@ -133,39 +133,6 @@
       margin-left: auto;
     }
 
-    /* Camera overlay */
-    #camera_container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0,0,0,0.8);
-      padding: 20px;
-      border-radius: 15px;
-      z-index: 1000;
-      display: none;
-      text-align: center;
-    }
-
-    #camera {
-      border-radius: 10px;
-      width: 300px;
-    }
-
-    #take_photo {
-      margin-top: 10px;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 8px;
-      background: #78e0c2;
-      color: #222;
-      cursor: pointer;
-    }
-
-    #take_photo:hover {
-      background: #5ac8b2;
-    }
-
     button {
       cursor: pointer;
     }
@@ -210,32 +177,18 @@
     <div class="chat-body" id="chat_body"></div>
 
     <div class="chat-input">
-      <button id="btn_camera" class="attach_btn"><i class="fas fa-camera"></i></button>
-      <input id="type_msg" class="type_msg" placeholder="Scrivi un messaggio..."></input>
+      <input id="type_msg" class="type_msg" placeholder="Scrivi un messaggio...">
       <button id="btn_mic" class="mic"><i class="fa fa-microphone"></i></button>
       <button id="send_btn" class="send_btn"><i class="fas fa-location-arrow"></i></button>
     </div>
   </div>
 
-  <!-- Camera Overlay -->
-  <div id="camera_container">
-    <video id="camera" autoplay playsinline></video>
-    <canvas id="photo" style="display:none;"></canvas>
-    <br>
-    <button id="take_photo">Scatta Foto</button>
-  </div>
-
   <script>
     const utente = prompt("Username:");
-    const ws = new WebSocket('wss://192.168.1.50:443')
+    const ws = new WebSocket('wss://localhost:443')
     const input = document.getElementById("type_msg");
     const button = document.getElementById("send_btn");
     const chatBody = document.getElementById("chat_body");
-    const camerabtn = document.getElementById("btn_camera");
-    const cameraContainer = document.getElementById("camera_container");
-    const camera = document.getElementById("camera");
-    const photo = document.getElementById("photo");
-    const takePhotoBtn = document.getElementById("take_photo");
     const microphonebtn = document.getElementById("btn_mic");
     
     ws.onmessage = event => {
@@ -256,14 +209,6 @@
         msgDiv.className = "d-flex justify-content-end mb-4"
       }
       
-      if (type === "image") {
-        msgDiv.innerHTML = `
-          <div class="${classMessage}">
-            <p><b>${user}</b></p>
-            <img src="${text}" style="max-width: 250px; border-radius: 15px;">
-          </div>
-        `;
-      } 
       if (type === "text"){
         msgDiv.innerHTML = `            
             <div class="${classMessage}">
@@ -295,27 +240,6 @@
         input.value = "";
       }
     })
-
-    camerabtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      cameraContainer.style.display = "block";
-      navigator.mediaDevices.getUserMedia({video: true})
-      .then(stream => {
-        camera.srcObject = stream;
-
-        takePhotoBtn.onclick = () => {
-          photo.width = camera.videoWidth;
-          photo.height = camera.videoHeight;
-          const ctx = photo.getContext("2d");
-          ctx.drawImage(camera, 0, 0, photo.width, photo.height);
-          const imgData = photo.toDataURL("image/png");
-
-          cameraContainer.style.display = "none";
-          stream.getTracks().forEach(track => track.stop());
-          ws.send(JSON.stringify({ user: utente, text: imgData, type: "image" }));
-        };
-      });
-    });
 
     let audioStream = null;
     let mediaRecorder = null;

@@ -9,10 +9,8 @@
 In this scenario, after two clients establish a communication, an attacker can intercept the RTP traffic (due to the RTP Bleed vulnerability) and inject malicious audio into the conversation.
 
 ## How to reproduce the issue
-As a first step, the containers are started with:
-```bash
-docker compose up -d --build
-```
+**Note**: First, update the ```EXTERNAL_IP``` variable with you machine's IP address in ```docker-compose.yaml``` (asterisk container).
+
 ### Step 1: Register two Linphones
 For this scenario, the Linphone application must be used to simulate the SIP clients.
 Users <b>7001</b> e <b>7002</b> are registered. Below is the registration of user 7001 (the registration procedure for 7002 is analogous):
@@ -22,9 +20,9 @@ Users <b>7001</b> e <b>7002</b> are registered. Below is the registration of use
 ### Step 2: Start Wireshark
 The Wireshark container is started to observe the port used for RTP traffic (in the example, RTP uses ports between 10000 and 10099). 
 
-To run Wireshark with a graphical interface from the container, you need to allow local root users to access the host’s display. This can be done with:
+To run Wireshark with a graphical interface from the container, you need to allow local root users to access the host’s display. This can be done on the host machine with:
 ```bash
-xhost +local:root
+sudo xhost +local:root
 ```
 Then the user can use the following command:
 ```bash
@@ -46,10 +44,8 @@ sippts rtpbleedinject -i <IP_VM> -r <port_number> -f audio.wav
 where:
 - ```rtpbleedinject``` indicates the type of attack, namely RTP Injection;
 - ```-i <IP_VM>``` represents the IP address of the VM running the Asterisk server;
--```-r <port_number>``` represents the IP address of the VM running the Asterisk server;
+- ```-r <port_number>``` represents the IP address of the VM running the Asterisk server;
 - ```-f audio.wav``` indicates the audio file injected into the conversation.
-
-
 
 ## Mitigations
 - Set ```nat = false``` to prevent the proxy from automatically learning information about attackers.

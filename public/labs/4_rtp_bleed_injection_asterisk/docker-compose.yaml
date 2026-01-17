@@ -6,6 +6,8 @@ services:
     command: asterisk -f -vv
     tty: true
     network_mode: "host"
+    environment:
+      EXTERNAL_IP: 192.168.1.50
     volumes:
       - ./asterisk/config:/etc/asterisk     
 
@@ -13,10 +15,7 @@ services:
     container_name: sippts
     build: ./sippts
     image: sippts
-    command: /bin/bash
     tty: true
-    depends_on:
-    - asterisk
     volumes:
       - ./audio.wav:/audio.wav        # audio per rtp_inject
 
@@ -25,9 +24,8 @@ services:
     build: ./wireshark
     image: wireshark
     environment:
-    - DISPLAY=:0
+    - DISPLAY=${DISPLAY}
     volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix  
     network_mode: "host"            
-    privileged: true                
-    command: wireshark
+    privileged: true
