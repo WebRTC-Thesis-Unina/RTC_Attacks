@@ -3,15 +3,13 @@ services:
     container_name: ttyd
     build: ./ttyd
     image: ttyd
+    command: ttyd --writable bash
     ports:
-      - "7681:7681"
-    environment:
-      SSH_USER: ${SSH_HOSTNAME}
-      SSH_HOST: ${SSH_IP}
-      SSH_KEY: ${SSH_KEY}
-    command: ["bash", "-c", "ttyd --writable bash -c 'ssh -i $SSH_KEY -o StrictHostKeyChecking=no $SSH_HOSTNAME@$SSH_IP; exec bash'"]
+      - 7681:7681
     stdin_open: true
     tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   collector:
     container_name: collector
@@ -27,13 +25,3 @@ services:
     tty: true
     entrypoint: /bin/bash
     command: /opt/collector/run.sh
-
-  alert:
-    container_name: alert
-    build: ./alert
-    image: alert
-    command: python3 alert.py
-    volumes:
-      - ./alert/alert.py:/alert.py
-      - ./alert/alert.log:/alert.log:rw
-      - ./captures:/captures:ro
