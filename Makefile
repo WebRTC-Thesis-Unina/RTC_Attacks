@@ -1,13 +1,12 @@
 DOCKER_COMPOSE := $(shell command -v docker-compose 2> /dev/null || echo "docker compose")
 
-SSH_HOSTNAME ?= 
-SSH_IP ?= 
-SSH_KEY ?=
+SERVICE ?=
 
 start:
-	@SSH_HOSTNAME=$(SSH_HOSTNAME) SSH_IP=$(SSH_IP) SSH_KEY=$(SSH_KEY) $(DOCKER_COMPOSE) up -d --build ttyd
-	@$(DOCKER_COMPOSE) up -d --build collector
+	@$(DOCKER_COMPOSE) up -d
 
 stop:
 	@$(DOCKER_COMPOSE) down
-	@$(DOCKER_COMPOSE) up -d --build alert
+
+build:
+	@$(DOCKER_COMPOSE) build $(SERVICE)
