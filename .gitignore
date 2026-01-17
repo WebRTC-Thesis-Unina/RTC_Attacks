@@ -21,7 +21,5 @@ pyenv
 Vagrantfile
 node_modules/
 .env
-key_pem.pem
-key_rsa.pem
 .vscode
 captures/
