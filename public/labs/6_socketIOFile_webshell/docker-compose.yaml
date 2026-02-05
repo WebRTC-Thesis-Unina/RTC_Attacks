@@ -1,5 +1,5 @@
 services:
-  node:
+  node_socketiofile:
     container_name: node_socketiofile
     build: ./node_socketiofile
     image: node_socketiofile

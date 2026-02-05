@@ -2,13 +2,12 @@ const fs = require("fs")
 const express = require("express")
 const https = require("https")
 const mongoose = require("mongoose")
-require('dotenv').config(); 
 
 const app = express()
 app.use(express.static('public'))
 app.use(express.json())
 
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect("mongodb://root:example@localhost:27017/rtc_attacks?authSource=admin")
 
 const server = https.createServer({
     key: fs.readFileSync('key.pem'),

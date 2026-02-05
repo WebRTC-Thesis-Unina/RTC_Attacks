@@ -1,11 +1,11 @@
 services:
-  ndoninja:
+  vdoninja:
     container_name: vdoninja
     build: ./vdoninja
     image: vdoninja
     network_mode: "host"
 
-  node:
+  node_mongoose:
     container_name: node_mongoose
     build: ./node_mongoose
     image: node_mongoose

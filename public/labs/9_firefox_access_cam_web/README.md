@@ -12,9 +12,9 @@ In this scenario, after launching the phishing campaign, the user receives the e
 ### Step 1: Create a phising mail
 To run Firefox with a graphical interface from the container, it is necessary to allow local root users to access the host display. On the host machine, execute:
 ```bash
-sudo xhost +local:root
+xhost +local:root
 ```
-Then start firefox container with:
+Then start firefox container:
 ```bash
 docker exec -it firefox bash
 firefox
@@ -24,25 +24,38 @@ In another terminal, access the GoPhish container and start the service:
 docker exec -it gophish bash
 ./gophish
 ```
-Next, open ```https://127.0.0.1:3333``` in the Firefox browser.
+Next, open ```https://127.0.0.1:3333``` in the Firefox. Log in using ```admin``` as the username and ```admin123``` as the password.
 
-The sender profile is defined as follows:
+At this point, several GoPhish components are already preconfigured for the lab environment:
+- A sending profile
+- A landing page
+- An email template
+
+The predefined sending profile is shown below:
 
 ![sending_profile](/public/labs/9_firefox_access_cam_web/img/sending_profiles.png)
 
-Next, the landing page is configured (that is, the page to which the user is redirected after clicking the button):
+The landing page (used to capture user credentials after clicking the email link) is already configured:
 
 ![landing_page](/public/labs/9_firefox_access_cam_web/img/landing_page.png)
 
-The email template is defined:
+The email template used for the phishing message is also already available:
 
 ![email_template](/public/labs/9_firefox_access_cam_web/img/email_template.png)
 
-The group of users targeted by the message is specified:
+The user must now create and configure the remaining components required to launch the campaign.
+
+First, define the group of target users who will receive the phishing email (use for example your mail):
 
 ![group](/public/labs/9_firefox_access_cam_web/img/users_group.png)
 
-Finally, a campaign is created and launched:
+Finally, create and launch a new campaign, selecting:
+- the existing sending profile,
+- the existing landing page,
+- the existing email template,
+- the newly created user group.
+
+**Note**: Set as URL: ```http://localhost```
 
 ![campaign](/public/labs/9_firefox_access_cam_web/img/campaign.png)
 

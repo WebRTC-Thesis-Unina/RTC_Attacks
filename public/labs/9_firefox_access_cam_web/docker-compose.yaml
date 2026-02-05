@@ -1,5 +1,5 @@
 services:
-  node:
+  node_firefox:
     container_name: node_firefox
     build: ./node_firefox
     image: node_firefox
@@ -12,6 +12,8 @@ services:
     image: gophish
     tty: true
     network_mode: "host"
+    volumes:
+      - ./gophish/data/gophish.db:/opt/gophish/gophish.db
 
   firefox:
     container_name: firefox

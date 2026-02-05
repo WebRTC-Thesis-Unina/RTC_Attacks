@@ -9,27 +9,21 @@
 In this scenario, by inserting specific input values, it is possible to bypass login controls and access the VDO.Ninja platform. Then, using a particular query string, sensitive information (e.g., cookies) can be extracted.
 
 ## How to reproduce the issue - Access Bypass
-### Step 1.1: Configure NoSQLi Database
-Assuming that MongoDB Atlas is used as the NoSQL database.
-
-To allow the container to access the database, set the allowed IP address to ```0.0.0.0/0```.
-
-### Step 1.2: Exploit the vulnerability
-The web page is accessed through a browser at: ```https://<IP_VM>```. In the vulnerable versions, the ```_bsontype``` attribute is ignored by server, and therefore by entering any username or password, access is granted.
+The web page is accessed through a browser at: ```https://localhost```. In the vulnerable versions, the ```_bsontype``` attribute is ignored by server, and therefore by entering any username or password, access is granted.
 
 ## Mitigations
 - Update to patched versions.
 - Improve server-side validation controls.
 
 ## How to reproduce the issue - Information Disclosure
-After being redirected to: ```https://<IP_VM>:8080```, a new attack can be performed. 
+After being redirected to: ```https://localhost:8080```, a new attack can be performed. 
 
 For the vulnerable versions, there is no sanification of this particular input.
 
 ### Exploit the vulnerability
 Using:
 ```bash
-https://<IP_VM>:8080/examples/control.html?room=<img src=x onerror=alert(document.cookie)>
+https://localhost:8080/examples/control.html?room=<img src=x onerror=alert(document.cookie)>
 ```
 the page’s cookies are obtained.
 

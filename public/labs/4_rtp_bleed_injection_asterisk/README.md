@@ -17,12 +17,14 @@ Users <b>7001</b> e <b>7002</b> are registered. Below is the registration of use
 
 ![registration](/public/labs/4_rtp_bleed_injection_asterisk/img/7001_registration.png)
 
+**Note**: Use your machine's IP address.
+
 ### Step 2: Start Wireshark
 The Wireshark container is started to observe the port used for RTP traffic (in the example, RTP uses ports between 10000 and 10099). 
 
 To run Wireshark with a graphical interface from the container, you need to allow local root users to access the host’s display. This can be done on the host machine with:
 ```bash
-sudo xhost +local:root
+xhost +local:root
 ```
 Then the user can use the following command:
 ```bash
