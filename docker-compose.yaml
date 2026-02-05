@@ -4,8 +4,7 @@ services:
     build: ./ttyd
     image: ttyd
     command: ttyd --writable bash
-    ports:
-      - 7681:7681
+    network_mode: "host"
     stdin_open: true
     tty: true
     volumes:
@@ -25,3 +24,13 @@ services:
     tty: true
     entrypoint: /bin/bash
     command: /opt/collector/run.sh
+    
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
