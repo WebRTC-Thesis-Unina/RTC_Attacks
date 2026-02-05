@@ -2,13 +2,53 @@ const express = require("express");
 const http = require('http');
 const mongoose = require('mongoose');
 const {spawn, exec} = require("child_process")
+const fs = require("fs");
+const path = require("path");
+const util = require("util");
+const execAsync = util.promisify(exec);
 
 const app = express();
 app.use(express.static("public"))
 app.use(express.json())
 
-require('dotenv').config(); 
-mongoose.connect(process.env.MONGODB_URI)
+// Funzione per popolare il database all'avvio a partire da file JSON
+async function loadScenarios() {
+  try {
+    const count = await Scenario.countDocuments();
+    if (count === 0) {  // se la collection è vuota
+      const dataPath = path.join(__dirname, "database", "scenarios.json");
+      const rawData = fs.readFileSync(dataPath, "utf8");
+      const scenarios = JSON.parse(rawData);
+
+      await Scenario.insertMany(scenarios);
+    } 
+  } catch (err) {
+    console.error("Error:", err.message);
+  }
+}
+
+// Funzione che attende finché non è stabilita la connessione con il DB
+async function connectMongoWithRetry() {
+  while (true) {
+    try {
+      await mongoose.connect(
+        "mongodb://root:example@localhost:27017/rtc_attacks?authSource=admin"
+      );
+      console.log("Mongo connected");
+      break;
+    } catch (err) {
+      console.log("Mongo not ready, retry in 3s...");
+      await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+}
+
+// Funzione che builda e avvia i container principali, collega nodeJS al DB e carica gli scenari
+async function start(){
+    await execAsync(`make build start`);
+    await connectMongoWithRetry();
+    await loadScenarios();
+}
 
 const scenarioSchema = new mongoose.Schema({
     id: Number,
@@ -122,25 +162,8 @@ app.post("/build-all", async(req, res) => {
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.setHeader("Transfer-Encoding", "chunked");
 
-    let buildCmd;
-
-    if (container.includes("ttyd") && container.includes("collector")){
-        const [ttyd, collector] = container.split(" ").slice(-2);
-        const containerNew = container.replaceAll(/ttyd|collector/g, "").trim();
-        
-        buildCmd = `make build SERVICE="${ttyd} ${collector}" &&
-            cd ${__dirname}/public/labs/${folder} && make build SERVICE="${containerNew}"`
+    let buildCmd = `cd ${__dirname}/public/labs/${folder} && make build SERVICE="${container}"`
     
-    } else if (container.includes("ttyd") || container.includes("collector")){
-        const [ttyd_collector] = container.split(" ").slice(-1);
-        const containerNew = container.replaceAll(/ttyd|collector/g, "").trim();
-    
-        buildCmd = `make build SERVICE="${ttyd_collector}" &&
-            cd ${__dirname}/public/labs/${folder} && make build SERVICE="${containerNew}"`
-    
-    } else {
-        buildCmd = `cd ${__dirname}/public/labs/${folder} && make build SERVICE="${container}"`
-    }
     
     const stream = spawn(buildCmd, { shell: true });
 
@@ -164,13 +187,7 @@ app.post("/build", async(req, res) => {
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.setHeader("Transfer-Encoding", "chunked");
 
-    let buildCmd;
-
-    if(image === "ttyd" || image === "collector"){
-        buildCmd = `make build SERVICE="${image}"`
-    } else {
-        buildCmd = `cd ${__dirname}/public/labs/${folder} && make build SERVICE="${image}"`
-    }
+    let buildCmd = `cd ${__dirname}/public/labs/${folder} && make build SERVICE="${image}"`
     
     const stream = spawn(buildCmd, { shell: true });
 
@@ -192,7 +209,7 @@ app.post("/images-to-build", async(req, res) =>{
 
     try {
         const scenario = await Scenario.findOne({id: id})
-        const containers = [...scenario.containers, "ttyd", "collector"];
+        const containers = scenario.containers;
 
         if (!scenario) {
             return res.status(404).json({ error: "Scenario not found" });
@@ -219,6 +236,8 @@ app.post("/images-to-build", async(req, res) =>{
         return res.status(500).json({ok: false, err: err.message});
     }
 })
+
+start()
 
 async function shutdown() {
   try {
