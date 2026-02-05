@@ -55,7 +55,7 @@ In this scenario, after launching the phishing campaign, the user receives the e
 
 ## Requirements
 To use this web application, you need to have the following installed on your local or remote machine:
-- Nodejs
+- nodejs
 - docker
 - docker-compose
 - git
@@ -66,32 +66,8 @@ Additionally, the following applications are required:
 - Wireshark
 - Firefox
 
-A cloud-based NoSQL database is used:
-- MongoDB Atlas
-
-## Database - MongoDB Atlas
-Create an account on MongoDB Atlas, then create a cluster and a database. Inside the database, create the following collections:
-
-- ```nosqli_users```
-- ```scenarios```
-
-To populate the collections, use the  ```user.json``` and ```scenario.json```files located in the ```database``` folder.
-
-<b>Note:</b> During the cluster creation process, save the ```MONGODB_URI``` connection string and store it in a ```.env``` file using the same variable name.
-
-> <b>Important:</b> To allow the container to access the database, set the allowed IP address to ```0.0.0.0/0```.
-
-<b>Note:</b> Also place a ```.env``` file containing the ```MONGODB_URI``` variable in the folder ```public/labs/7_8_vdo.ninja_xss_nosqli/node_mongoose``` because the server needs access to the MongoDB database.
-
-## SSH Access
-To access the local or remote machine, you must use a private key.
-
-If you are accessing the <b>local machine</b>, save your private key (used to authenticate) in a file called ```key_pem.pem```.
-
-If you are accessing the <b>remote machine</b>, follow the instructions in the previous section.
-
 ## Setup
-After installing the required software and configure the database, clone the repository and move into the project directory:
+After installing the required software, clone the repository and move into the project directory:
 ```bash
 git clone https://github.com/WebRTC-Thesis-Unina/RTC_Attacks
 cd RTC_Attacks
