@@ -2,7 +2,7 @@
   "dependencies": {
     "express": "^5.2.1",
     "fs": "^0.0.1-security",
-    "https": "^1.0.0",
+    "http": "^0.0.1-security",
     "path": "^0.12.7",
     "ws": "^8.18.3"
   }

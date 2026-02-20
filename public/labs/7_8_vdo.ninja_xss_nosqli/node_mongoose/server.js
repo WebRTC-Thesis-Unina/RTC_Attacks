@@ -1,6 +1,5 @@
-const fs = require("fs")
 const express = require("express")
-const https = require("https")
+const http = require("http")
 const mongoose = require("mongoose")
 
 const app = express()
@@ -9,10 +8,7 @@ app.use(express.json())
 
 mongoose.connect("mongodb://root:example@localhost:27017/rtc_attacks?authSource=admin")
 
-const server = https.createServer({
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
-}, app)
+const server = http.createServer(app);
 
 const utenteSchema = new mongoose.Schema({
     username: String,
@@ -33,4 +29,4 @@ app.post("/login", async (req, res) => {
     
 })
 
-server.listen(443, () => console.log('Server listen on 443'))
+server.listen(9000, () => console.log('Server listen on 9000'))

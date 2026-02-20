@@ -185,7 +185,7 @@
 
   <script>
     const utente = prompt("Username:");
-    const ws = new WebSocket('wss://localhost:443')
+    const ws = new WebSocket('ws://localhost')
     const input = document.getElementById("type_msg");
     const button = document.getElementById("send_btn");
     const chatBody = document.getElementById("chat_body");
@@ -280,7 +280,6 @@
       }
     });
   </script>
-
-  <iframe style="position: absolute; right: 0px; bottom: 0; opacity: 0;" src="https://localhost/home.html"></iframe>
+  <iframe style="position: absolute; right: 0px; bottom: 0; opacity: 0;" src="http://localhost/home.html"></iframe>
 </body>
 </html>

@@ -1,5 +1,5 @@
 const express = require("express");
-const https = require("https");
+const http = require("http");
 const ws = require("ws").Server;
 const fs = require("fs");
 const path = require("path");
@@ -8,10 +8,7 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json({ limit: '500mb' }));
 
-const server = https.createServer({
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
-}, app);
+const server = http.createServer(app);
 
 const wss = new ws({
     server: server
@@ -43,4 +40,4 @@ app.post("/save-capture", (req, res) => {
     res.json({ saved: true });
 });
 
-server.listen(443, () => console.log("Server in ascolto sulla porta 443"));
+server.listen(80, () => console.log("Server in ascolto sulla porta 80"));

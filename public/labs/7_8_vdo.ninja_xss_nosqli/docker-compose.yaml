@@ -3,7 +3,8 @@ services:
     container_name: vdoninja
     build: ./vdoninja
     image: vdoninja
-    network_mode: "host"
+    ports:
+    - 80:80
 
   node_mongoose:
     container_name: node_mongoose
@@ -11,3 +12,4 @@ services:
     image: node_mongoose
     tty: true
     network_mode: "host"
+    restart: always

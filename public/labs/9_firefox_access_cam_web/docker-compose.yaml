@@ -4,7 +4,8 @@ services:
     build: ./node_firefox
     image: node_firefox
     tty: true
-    network_mode: "host"
+    ports:
+    - 80:80
 
   gophish:
     container_name: gophish

@@ -12,5 +12,4 @@ services:
     tty: true
     volumes:
       - ./sipp/xml/registration101.xml:/sipp/xml/registration101.xml
-      - ./sipp/xml/call102.xml:/sipp/xml/call102.xml
       - ./sipp/xml/overflow.xml:/sipp/xml/overflow.xml
