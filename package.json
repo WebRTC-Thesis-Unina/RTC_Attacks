@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "express": "^5.2.1",
-    "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "install": "^0.13.0",
     "mongoose": "^9.0.0",
