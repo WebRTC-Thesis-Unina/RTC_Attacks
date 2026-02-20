@@ -1,0 +1,70 @@
+alert sip any any -> any 5060 (
+    msg:"SIP Message from UniCredit Detected";
+    content:"UniCredit"; 
+    sid:1000001;
+    rev:1;
+)
+
+alert sip any any -> any 5060 (
+    msg:"Possible SIP REGISTER Flood Detected";
+    content:"REGISTER sip:"; 
+    detection_filter:track by_src, count 100, seconds 5;
+    sid:1000002;
+    rev:1;
+)
+
+alert sip any any -> any 5060 (
+    msg:"Possible SIP Overflow Detected";
+    content:"REGISTER sip:";
+    content:"From:";
+    pcre:"/tag=\s?.{50,}/";
+    sid:1000003;
+    rev:1;
+)
+
+alert udp any any -> any [10000:10099] (
+    msg:"Possible RTP Injection Detected";
+    content:"|80|", depth 1, offset 0;
+    byte_test:1,&,0x80,0;
+    detection_filter:track by_src, count 100, seconds 5;
+    sid:1000004;
+    rev:1;
+)
+
+alert tcp any any -> any 3478 (
+    msg:"Possible CoTURN Access Bypass Detected";
+    flow:to_server,established;
+    content:"|00 0A|", depth 2, offset 0;
+    content:"|21 12 A4 42|", depth 8, offset 4;
+    content:"|00 12|";
+    content:"|00 14 00 02|", distance 0, within 4;
+    content:"|3E 52|", distance 0, within 2;
+    content:"|21 12 A4 42|", distance 0, within 4;
+    content:"username1";
+    sid:100005;
+    rev:1;
+)
+
+alert tcp any any -> any 8080 (
+    msg:"Possible RCE Detected";
+    content:"GET";
+    content:"cmd=";
+    sid:1000006;
+    rev:1;
+)
+
+alert tcp any any -> any 80 (
+    msg:"Possible XSS Detected";
+    content:"GET";
+    content:"alert";
+    sid:1000008;
+    rev:1;
+)
+
+alert tcp any any -> any 80 (
+    msg:"Possible Firefox Permission Abuse Detected";
+    content:"User-Agent";
+    content:"Firefox/68.0";
+    sid:1000009;
+    rev:1;
+)
