@@ -4,26 +4,13 @@ services:
     build: ./ttyd
     image: ttyd
     command: ttyd --writable bash
-    network_mode: "host"
+    ports:
+      - 7681:7681
+      - 8000:8000
     stdin_open: true
     tty: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
-  collector:
-    container_name: collector
-    build: ./collector
-    image: collector
-    network_mode: host
-    privileged: true
-    pid: host
-    volumes:
-      - ./captures:/captures
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    stdin_open: true
-    tty: true
-    entrypoint: /bin/bash
-    command: /opt/collector/run.sh
     
   mongo:
     container_name: mongo
@@ -34,3 +21,17 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - 27017:27017
+
+  snort:
+    container_name: snort
+    build: ./snort
+    image: snort
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./snort:/usr/local/etc/snort:ro
+      - ./captures:/captures
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
