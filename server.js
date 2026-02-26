@@ -45,7 +45,9 @@ async function connectMongoWithRetry() {
 
 // Funzione che builda e avvia i container principali, collega nodeJS al DB e carica gli scenari
 async function start(){
+    console.log("Starting containers...");
     await execAsync(`make build start`);
+    console.log("Connecting...");
     await connectMongoWithRetry();
     await loadScenarios();
 }

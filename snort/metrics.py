@@ -35,9 +35,13 @@ def preprocessing(input_file, output_file):
     df = pd.read_csv(input_file, low_memory=False)
 
     numeric_cols = [
-        "udp.length",
-        "rtp.timestamp",
-        "rtp.seq"
+        "udp.srcport", "udp.dstport", "ip.ttl",
+        "ip.version", "ip.hdr_len", "ip.len",
+        "udp.length", "ip.checksum", "udp.checksum",
+        "icmp.type", "icmp.code", "icmp.checksum",
+        "icmp.seq", "rtp.seq", "rtp.timestamp",
+        "sip.CSeq", "tcp.srcport", "tcp.dstport",
+        "http.response.code",
     ]
 
     for col in numeric_cols:

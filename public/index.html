@@ -535,19 +535,22 @@
                 })
               
                 const reader = res.body.getReader();
-                const decoder = new TextDecoder();
+                const decoder = new TextDecoder("utf-8", { fatal: false }); 
                 
                 const pre = document.createElement("pre")
                 const code = document.createElement("code")
+                pre.appendChild(code)
+                document.querySelector(".logs-selected").appendChild(pre)
 
                 while (true) {
                   const { done, value } = await reader.read();
-                  if (done) break;
+                  if (done) {
+                    decoder.decode(); // flush
+                    break;
+                  }
                   
                   const textChunk = decoder.decode(value, { stream: true });
-                  code.textContent += textChunk
-                  pre.appendChild(code)
-                  document.querySelector(".logs-selected").appendChild(pre)
+                  code.textContent += stripAnsi(textChunk);
                 }
 
                 notyf.success(`Image ${container} have been build`);
@@ -583,19 +586,22 @@
               })
             
               const reader = res.body.getReader();
-              const decoder = new TextDecoder();
+              const decoder = new TextDecoder("utf-8", { fatal: false }); 
               
               const pre = document.createElement("pre")
               const code = document.createElement("code")
+              pre.appendChild(code)
+              document.querySelector(".logs-selected").appendChild(pre)
 
               while (true) {
                 const { done, value } = await reader.read();
-                if (done) break;
+                if (done) {
+                  decoder.decode(); // flush
+                  break;
+                }
                 
                 const textChunk = decoder.decode(value, { stream: true });
-                code.textContent += textChunk
-                pre.appendChild(code)
-                document.querySelector(".logs-selected").appendChild(pre)
+                code.textContent += stripAnsi(textChunk);
               }
 
               notyf.success("All images have been build");
@@ -640,6 +646,14 @@
         })  
     }
 
+    // Regex per rimuovere escape codes ANSI (colori, cursore, ecc.)
+    function stripAnsi(str) {
+      if (!str) return "";
+      return str.replace(/\x1B\[[0-9;]*[A-Za-z]/g, '')
+                .replace(/\x1B\][^\x07]*\x07/g, '')
+                .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
       getAllScenarios();
     });    
@@ -680,33 +694,36 @@
       
       cloudPanel.scrollIntoView({ behavior: "smooth" });
 
-      const res = await fetch("/make-start", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          folder: folders[ID]
-        })
-      })
-      
       try{
+        const res = await fetch("/make-start", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            folder: folders[ID]
+          })
+        })
+
         const reader = res.body.getReader();
-        const decoder = new TextDecoder();
+        const decoder = new TextDecoder("utf-8", { fatal: false });
         
         const pre = document.createElement("pre")
         const code = document.createElement("code")
+        pre.appendChild(code)
+        document.querySelector(".logs-selected").appendChild(pre)
 
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            decoder.decode(); // flush
+            break;
+          }
           
           const textChunk = decoder.decode(value, { stream: true });
-          code.textContent += textChunk
-          pre.appendChild(code)
-          document.querySelector(".logs-selected").appendChild(pre)
+          code.textContent += stripAnsi(textChunk);
         }
-      
+              
         vmStatus.textContent = "Running";
         
         // Iframe
@@ -733,31 +750,34 @@
       vmStatus.classList.add("stopped");
       cloudPanel.querySelector("iframe").remove();
 
-      const res = await fetch("/make-stop", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          folder: folders[ID]
-        })
-      })
-      
       try{
+        const res = await fetch("/make-stop", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            folder: folders[ID]
+          })
+        })
+        
         const reader = res.body.getReader();
-        const decoder = new TextDecoder();
+        const decoder = new TextDecoder("utf-8", { fatal: false });
         
         const pre = document.createElement("pre")
         const code = document.createElement("code")
+        pre.appendChild(code)
+        document.querySelector(".logs-selected").appendChild(pre)
 
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            decoder.decode(); // flush
+            break;
+          }
           
           const textChunk = decoder.decode(value, { stream: true });
-          code.textContent += textChunk
-          pre.appendChild(code)
-          document.querySelector(".logs-selected").appendChild(pre)
+          code.textContent += stripAnsi(textChunk);
         }
 
         cloudPanel.classList.add("hidden");
