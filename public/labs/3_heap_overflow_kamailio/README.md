@@ -1,4 +1,4 @@
-# Memory Corruption
+# SIP Overflow
 - Vulnerable component: Kamailio server
 - Affected versions: 
     - before 4.4.7
@@ -7,10 +7,10 @@
 - CVE ID: [CVE-2018-8828](https://nvd.nist.gov/vuln/detail/CVE-2018-8828)
 
 ## Description
-In this scenario, due to a malformed request sent to the server, it crashes because of Memory Corruption: the data is written beyond the dynamically allocated memory.
+In this scenario, due to a malformed request sent to the server, it crashes because of memory corruption: the data is written beyond the dynamically allocated memory.
 
 ## How to reproduce the issue
-If a REGISTER request contains a malformed or excessively long  ```branch``` parameter or ```From tag``` — fields that are not properly bounded in vulnerable versions — the call to ```tmx_check_pretran()``` will trigger an off-by-one heap-based buffer overflow, causing a segmentation fault and crashing the container.
+If a REGISTER request contains a malformed or excessively long  ```branch``` parameter or ```From tag``` — fields that are not properly bounded in vulnerable versions — the call to ```tmx_check_pretran()``` function in ```tmx_pretran.c``` file will trigger an off-by-one heap-based buffer overflow, causing a segmentation fault and crashing the container.
 
 ### Exploit the vulnerability
 Access the <i>sipp101</i> container:
@@ -46,9 +46,11 @@ The script used is:
     Content-Length: 0
     ]]>
   </send>
-  
 </scenario>
 ```
+The effect is shown below:
+
+![segmentation_fault](img/exit_of_kamailio.png)
 
 ### Mitigations
 - Update to patched version:

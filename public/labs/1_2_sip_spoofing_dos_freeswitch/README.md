@@ -1,4 +1,4 @@
-# SIP Spoofing and DoS Attack
+# SIP Spoofing and SIP Flooding
 - Vulnerable component: FreeSWITCH server
 - Affected version: ≤ 1.10.6
 - CVE IDs: [CVE-2021-37624](https://nvd.nist.gov/vuln/detail/CVE-2021-37624), [CVE-2021-41145](https://nvd.nist.gov/vuln/detail/CVE-2021-41145)
@@ -62,7 +62,7 @@ The following message will appear:
 - Upgrade to a patched version (e.g. 1.10.7 or later). 
 - In configuration, set ```auth-messages = true``` so that SIP MESSAGE requests require authentication.
 
-## 2. How to reproduce the issue - DoS via SIP Flood
+## 2. How to reproduce the issue - SIP Flooding
 In this case no registration is required.
 
 Because the server must allocate resources to process each registration, memory is exhausted and the FreeSWITCH container crashes. 
@@ -72,7 +72,7 @@ Access the attacker container and run:
 ```bash
 python3 dos-sipflood.py <IP_VM>
 ```
-The script below repeatedly sends SIP REGISTER (or similar) requests to the FreeSWITCH server:
+The script below repeatedly sends SIP REGISTER requests to the FreeSWITCH server:
 ```python
 import socket, string, random, sys
 
@@ -102,6 +102,14 @@ while True:
 ```
 
 You can observe this by monitoring the container with `docker stats`: after some time memory consumption grows until it hits the limit, then the container terminates.
+
+Before:
+
+![docker_stats](img/dockerstats.png)
+
+After:
+
+![termination](img/termination.png)
 
 ## Mitigation
 - Update to patched version (e.g. 1.10.7 or later).

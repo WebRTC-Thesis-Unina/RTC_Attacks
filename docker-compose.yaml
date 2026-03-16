@@ -6,7 +6,6 @@ services:
     command: ttyd --writable bash
     ports:
       - 7681:7681
-      - 8000:8000
     stdin_open: true
     tty: true
     volumes:

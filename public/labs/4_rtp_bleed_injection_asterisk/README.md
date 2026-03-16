@@ -30,10 +30,16 @@ Then the user can use the following command:
 ```bash
 docker exec -it wireshark wireshark
 ```
-The network interface is selected, and a call is initiated between Linphone 7001 and 7002.
+The network interface is selected, and a call is initiated between Linphone 7001 and 7002:
+
+![call](img/call.png)
+
+On Wireshark you can see the port used for the communication:
+
+![wireshark](img/wireshark_inject.png)
 
 ### Step 3: Exploit the vulnerability
-In the vulnerable versions, if ```nat = yes```, the RTP proxies can automatically learn the attacker's IP and port and send the RTP legitimate traffic to him. After that, the attacker can send a malisous audio and degradeted the connection.
+In the vulnerable versions, if ```nat = yes```, the RTP proxies can automatically learn the attacker's IP and port and send the RTP legitimate traffic to him. After that, the attacker can send a malicious audio and degradeted the connection.
 
 Access the <i>sippts</i> container:
 ```bash
@@ -46,7 +52,7 @@ sippts rtpbleedinject -i <IP_VM> -r <port_number> -f audio.wav
 where:
 - ```rtpbleedinject``` indicates the type of attack, namely RTP Injection;
 - ```-i <IP_VM>``` represents the IP address of the VM running the Asterisk server;
-- ```-r <port_number>``` represents the IP address of the VM running the Asterisk server;
+- ```-r <port_number>``` represents the previously identified port number;
 - ```-f audio.wav``` indicates the audio file injected into the conversation.
 
 ## Mitigations

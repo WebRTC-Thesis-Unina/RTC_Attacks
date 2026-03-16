@@ -34,6 +34,13 @@ get_bridges() {
         | grep '^br-' || true
 }
 
+get_lo() {
+    ip -o link \
+        | awk -F': ' '{print $2}' \
+        | awk -F':' '{print $1}' \
+        | grep '^lo' || true
+}
+
 # Funzione che restituisce il nome della rete a partire dal bridge ID
 get_network_name_from_bridge() {
     local bridge_name="$1"
@@ -217,6 +224,34 @@ check_new_bridges() {
     fi
 }
 
+LOOPBACK_STARTED=false
+
+check_loopback() {
+    if [ "$LOOPBACK_STARTED" = true ]; then
+        return 0
+    fi
+
+    local lo_iface
+    lo_iface=$(get_lo | head -1)
+
+    echo "Avvio cattura su loopback ($lo_iface) per container host-network..."
+
+    # Cattura tutto il traffico non puramente localhost
+    tcpdump -i "$lo_iface" -U -w "${PCAP_DIR}/loopback.pcap" 'not host 127.0.0.1' &
+    LAUNCHED_PIDS+=($!)
+
+    snort -c /usr/local/etc/snort/snort.lua \
+        -l "${SNORT_DIR}" \
+        -i "$lo_iface" \
+        -A full \
+        -k none &
+    SNORT_PID=$!
+    LAUNCHED_PIDS+=($SNORT_PID)
+
+    LOOPBACK_STARTED=true
+    echo "✓ Loopback monitoring avviato su $lo_iface"
+}
+
 # Funzione richiamata alla terminazione del container snort. Essa si occupa di terminare
 # tutti i processi attivi in quel momento
 cleanup() {
@@ -224,6 +259,8 @@ cleanup() {
     echo "Pulizia in corso..."
     echo "=========================================="
     python3 metrics.py
+
+    sleep 5
 
     for pid in "${LAUNCHED_PIDS[@]}"; do
         if kill -0 "$pid" 2>/dev/null; then
@@ -283,9 +320,24 @@ echo ""
 echo "Controllo bridge esistenti..."
 check_new_bridges
 
+handle_new_container() {
+    local container_id="$1"
+    local container_name="$2"
+
+    follow_logs "$container_name"
+
+    local net_mode
+    net_mode=$(docker inspect --format '{{.HostConfig.NetworkMode}}' "$container_id" 2>/dev/null || echo "")
+
+    if [ "$net_mode" = "host" ]; then
+        echo "Container host-network rilevato: $container_name"
+        check_loopback
+    fi
+}
+
 # In caso di avvio di nuovi container (event = start), si ricavano i suoi log
 while read -r container_id container_name; do
-    follow_logs "$container_name"
+    handle_new_container "$container_id" "$container_name"
 done < <(
     docker events \
         --filter 'type=container' \

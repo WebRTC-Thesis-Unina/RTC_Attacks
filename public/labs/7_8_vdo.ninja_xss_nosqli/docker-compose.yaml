@@ -3,8 +3,7 @@ services:
     container_name: vdoninja
     build: ./vdoninja
     image: vdoninja
-    ports:
-    - 80:80
+    network_mode: "host"
 
   node_mongoose:
     container_name: node_mongoose

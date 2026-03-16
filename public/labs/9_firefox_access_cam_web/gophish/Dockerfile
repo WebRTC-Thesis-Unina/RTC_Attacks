@@ -15,3 +15,5 @@ RUN wget https://github.com/gophish/gophish/releases/download/v${GOPHISH_VERSION
     && rm gophish-v${GOPHISH_VERSION}-linux-64bit.zip
 
 WORKDIR /opt/gophish
+
+COPY config.json /opt/gophish/config.json

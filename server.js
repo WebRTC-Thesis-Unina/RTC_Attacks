@@ -50,6 +50,11 @@ async function start(){
     console.log("Connecting...");
     await connectMongoWithRetry();
     await loadScenarios();
+    server.listen(8888, () => console.log("Server listen on port 8888"));
+}
+
+function escape(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 const scenarioSchema = new mongoose.Schema({
@@ -63,8 +68,6 @@ const scenarioSchema = new mongoose.Schema({
 const Scenario = mongoose.model("scenario", scenarioSchema);
 
 const server = http.createServer(app)
-
-server.listen(8888, () => console.log("Server listen on port 8888"));
 
 app.get("/scenarios",async (req, res)=>{
     try {
@@ -143,7 +146,7 @@ app.post("/make-stop", async(req, res) => {
 })
 
 app.get("/search", async(req, res) => {
-    const name = req.query.name;
+    const name = escape(req.query.name);
     try {
         const scenarios = await Scenario.find({ name:{ $regex: name, $options: "i" }}).sort({id: 1});;
         if (scenarios.length === 0) {

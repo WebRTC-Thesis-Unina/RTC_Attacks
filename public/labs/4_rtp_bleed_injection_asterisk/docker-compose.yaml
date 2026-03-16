@@ -8,6 +8,7 @@ services:
     network_mode: "host"
     environment:
       EXTERNAL_IP: 192.168.1.50
+      LOCAL_NET: 192.168.1.0/24
     volumes:
       - ./asterisk/config:/etc/asterisk     
 

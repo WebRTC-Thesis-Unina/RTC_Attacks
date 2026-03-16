@@ -46,7 +46,7 @@ def preprocessing(input_file, output_file):
 
     for col in numeric_cols:
         if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
+            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype("int64")
 
     if "frame.time" in df.columns:
         df["frame.time"] = pd.to_datetime(
@@ -120,12 +120,24 @@ def check_attacks(input_file, snort_file, output_file):
         "attack"
     ] = "rtp_injection"
 
+    # Conversione timestamp in float
+    alert_times = pd.to_datetime(list(timestamps), format="%m/%d-%H:%M:%S.%f", utc=True)
+
+    # Conversione frame.time in datetime per confronto
+    frame_times = pd.to_datetime(df["frame.time"], format="%m/%d-%H:%M:%S.%f", utc=True)
+
+    # time_mask: vero se il pacchetto è entro ±5µs
+    epsilon = pd.Timedelta(microseconds=5)
+    time_mask = frame_times.apply(
+        lambda t: any(abs(t - at) <= epsilon for at in alert_times)
+    )
+
     # Coturn Access Bypass: tutto il traffico generato verso il server Coturn con IP "::"
     # o "::1" è etichettato come malevolo (si classifica tutto il traffico proveniente 
     # dallo specifico IP) in questo modo anche il traffico successivo è classificato 
     # come malevolo
     turn_mask = (
-        mask & 
+        time_mask &
         ((df["tcp.dstport"] == 3478) |
         (df["udp.dstport"] == 3478))
     )
@@ -156,7 +168,7 @@ def check_attacks(input_file, snort_file, output_file):
 
     # XSS: in caso di inserimento dei seguenti caratteri ci si trova d'innanzi a XSS
     attack_trigger = (
-        mask & 
+        time_mask &
         (
             df["http.request.full_uri"].fillna("").astype(str).str.contains("alert") |
             df["http.request.full_uri"].fillna("").astype(str).str.contains("script") |

@@ -1,4 +1,4 @@
-# Scenario 9: Permission abuse
+# Permission Abuse
 - Vulnerable components: Firefox and Firefox ESR
 - Affected versions:
     - for Firefox: < 69
@@ -6,7 +6,7 @@
 - CVE ID: [CVE-2019-11748](https://nvd.nist.gov/vuln/detail/CVE-2019-11748)
 
 ## Description
-In this scenario, after launching the phishing campaign, the user receives the email. They decide to click the button and are redirected to the landing page managed by the attacker. On this page, they enter their data, which is captured by the attacker, and are then redirected to their intended web page. On this page, the user grants permissions to access the microphone. Believing these permissions are used for chat purposes, the user inadvertently allows the attacker to access the audio and video stream, which can then be used on third-party sites.
+In this scenario, after launching the phishing campaign, the user receives the email. He decides to click the button and is redirected to the landing page managed by the attacker. On this page, he enters his data, which is captured by the attacker, and is then redirected to his intended web page. On this page, the user grants permissions to access the microphone. Believing these permissions are used for chat purposes, the user inadvertently allows the attacker to access the audio stream, which can then be used on third-party sites.
 
 ## How to reproduce the issue
 ### Step 1: Create a phising mail
@@ -26,12 +26,11 @@ docker exec -it gophish bash
 ```
 Next, open ```https://127.0.0.1:3333``` in the Firefox. Log in using ```admin``` as the username and ```admin123``` as the password.
 
-At this point, several GoPhish components are already preconfigured for the lab environment:
-- A sending profile
-- A landing page
-- An email template
+As first step, create a sending profile. 
 
-The predefined sending profile is shown below:
+To do this, create a Gmail account that can be used to send emails. Use this account to populate the fields "SMTP From" and "Username". As the password, you can use your account password or an App password (in this case, two-factor authentication must be  enabled). 
+
+The sending profile is shown below:
 
 ![sending_profile](/public/labs/9_firefox_access_cam_web/img/sending_profiles.png)
 
@@ -39,23 +38,21 @@ The landing page (used to capture user credentials after clicking the email link
 
 ![landing_page](/public/labs/9_firefox_access_cam_web/img/landing_page.png)
 
-The email template used for the phishing message is also already available:
+The email template used for the phishing message is also already available. You only need to configure the "Envelope Sender" field:
 
 ![email_template](/public/labs/9_firefox_access_cam_web/img/email_template.png)
 
-The user must now create and configure the remaining components required to launch the campaign.
-
-First, define the group of target users who will receive the phishing email (use for example your mail):
+Define the group of target users who will receive the phishing email - use your email:
 
 ![group](/public/labs/9_firefox_access_cam_web/img/users_group.png)
 
-Finally, create and launch a new campaign, selecting:
-- the existing sending profile,
-- the existing landing page,
-- the existing email template,
-- the newly created user group.
+Finally, create and launch a new campaign by selecting:
+- the sending profile;
+- the landing page;
+- the email template;
+- the target groups.
 
-**Note**: Set as URL: ```http://localhost```
+**Note**: Set as URL: ```http://localhost:81```
 
 ![campaign](/public/labs/9_firefox_access_cam_web/img/campaign.png)
 
@@ -73,9 +70,18 @@ By entering their credentials, the user is in fact providing them to the attacke
 ![details](/public/labs/9_firefox_access_cam_web/img/details.png)
 
 ### Step 3: Exploit the vulnerability
-At this point, the user is redirected to the attacker’s page, and by granting access to the microphone for what appears to be a conversation, they are effectively allowing the attacker to use these permissions on third-party pages. In the vulnerable versions, the browser retains granted permissions and applies them on third-party pages as well.
+At this point, the user is redirected to the attacker’s page. By granting access to the microphone (and checking the *'Remember this decision'* option) for what appears to be a conversation, the user is effectively allowing the attacker to reuse these permissions on third-party pages (```home.html```).
 
->**Note**: The user must use vulnerable versions of Firefox browser.
+On ```home.html```, by exploiting the previously granted premission, the attacker can capture the user's audio and save it. 
+
+Access on ```node_firefox``` container:
+
+```bash
+docker exec -it node_firefox bash
+```
+then navigate to the ```data/audio``` directory to view the user's recorded audio:
+
+![audio_file](img/audio_rec.png)
 
 ## Mitigation
 - Update to patched version.

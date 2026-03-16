@@ -40,7 +40,7 @@
       background-color: rgba(0, 111, 151, 0.603);
       padding: 10px;
       border-radius: 10px;
-      color: rgb(255, 255, 255)
+      color: rgb(255, 255, 255);
     }
 
     input::placeholder {
@@ -156,8 +156,12 @@
     }
 
     .content img {
-      width: 70%;
+      max-width: 650px;
+      width: 100%;
+      height: auto;
       border-radius: 10px;
+      display: block;
+      margin: 20px auto;
     }
 
     .content h1, .content h2, .content h3, .content h4 {
@@ -435,6 +439,7 @@
       7: "7_8_vdo.ninja_xss_nosqli",
       8: "9_firefox_access_cam_web",
     }
+    const contentArea = document.querySelector(".content");
 
     function getAllScenarios() {
       fetch("/scenarios")
@@ -459,13 +464,13 @@
 
     function selectScenario(div) {
       document.querySelector(".intro-wrapper").style.display = "none";
+      document.querySelector("#scenario-container").innerHTML = "";
+      contentDivContainers.innerHTML = "";
+
       fetch(`/scenario/${div.id}`)
       .then(res => res.json())
       .then(data => {
         ID = div.id
-        document.querySelector("#scenario-container").innerHTML = "";
-        document.querySelector(".content").scrollTo({ top: 0, behavior: "smooth" });   
-        contentDivContainers.innerHTML = "";
         
         contentDivContainers.classList.add("container-scenario-selected");
         contentDivContainers.id = "container-scenario-selected-" + ID;
@@ -545,7 +550,7 @@
                 while (true) {
                   const { done, value } = await reader.read();
                   if (done) {
-                    decoder.decode(); // flush
+                    decoder.decode();
                     break;
                   }
                   
@@ -596,7 +601,7 @@
               while (true) {
                 const { done, value } = await reader.read();
                 if (done) {
-                  decoder.decode(); // flush
+                  decoder.decode(); 
                   break;
                 }
                 
@@ -688,12 +693,9 @@
       startMachine.style.display = "none";
       stopMachine.style.display = "inline-block";
 
-      vmStatus.textContent = "Starting...";
       vmStatus.className = "";
       vmStatus.classList.add("running");
-      
-      cloudPanel.scrollIntoView({ behavior: "smooth" });
-
+            
       try{
         const res = await fetch("/make-start", {
           method: "POST",
@@ -716,13 +718,15 @@
         while (true) {
           const { done, value } = await reader.read();
           if (done) {
-            decoder.decode(); // flush
+            decoder.decode();
             break;
           }
           
           const textChunk = decoder.decode(value, { stream: true });
           code.textContent += stripAnsi(textChunk);
         }
+
+        setTimeout(cloudPanel.scrollIntoView({ bottom: 0, behavior: "smooth" }), 1000)
               
         vmStatus.textContent = "Running";
         
@@ -772,7 +776,7 @@
         while (true) {
           const { done, value } = await reader.read();
           if (done) {
-            decoder.decode(); // flush
+            decoder.decode();
             break;
           }
           
@@ -785,7 +789,7 @@
         stopMachine.style.display = "none"; 
         notyf.success("Containers stopped");
 
-        document.querySelector(".content").scrollTo({ top: 0, behavior: "smooth" });
+        setTimeout(() => contentArea.scrollTo({ top: 0, behavior: "smooth" }), 1000);
       }catch(err) {
         notyf.error("Error: " + err);
       }
