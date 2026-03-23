@@ -1,0 +1,19 @@
+macro_area,subcategory,num_cves,pct_of_filtered_cves
+Client / Browser,Client/browser weakness,78,18.8
+Client / Browser,Permission reuse / device access abuse,6,1.4
+Client / Browser,Browser-side trust boundary weakness,3,0.7
+Media / Transport,Media transport weakness,37,8.9
+Media / Transport,RTP flooding / denial of service,10,2.4
+Media / Transport,Media protection / downgrade weakness,5,1.2
+Relay / Traversal,Traversal / relay weakness,24,5.8
+Relay / Traversal,Relay denial of service,6,1.4
+Relay / Traversal,Access control bypass / internal reachability,5,1.2
+Signaling / Parser,Flooding / denial of service,70,16.9
+Signaling / Parser,Signaling weakness,58,14.0
+Signaling / Parser,Parser overflow / memory corruption,48,11.6
+Signaling / Parser,Malformed SIP/SDP handling,12,2.9
+Web / Backend / API,Web/backend weakness,26,6.3
+Web / Backend / API,Cross-site scripting,9,2.2
+Web / Backend / API,File upload / remote code execution,6,1.4
+Web / Backend / API,Injection / query manipulation,2,0.5
+Web / Backend / API,API / authentication bypass,1,0.2

@@ -1,0 +1,16 @@
+\begin{table}[h!]
+\centering
+\scriptsize
+\begin{tabular}{p{2.5cm}p{4.0cm}p{1.6cm}p{3.4cm}}
+\toprule
+\textbf{Macro-area (testbed plane)} & \textbf{Dominant NVD subcategories (2021--2026)} & \textbf{\% of filtered CVEs} & \textbf{Representative RTC-Attack Lab scenario(s)} \\
+\midrule
+Relay / Traversal & Traversal / relay weakness (24); Relay denial of service (6); Access control bypass / internal reachability (5) & 8.4\% & CVE-2020-26262 (coTURN bypass) \\
+Signaling / Parser & Flooding / denial of service (70); Signaling weakness (58); Parser overflow / memory corruption (48) & 45.3\% & CVE-2018-8828 (Kamailio overflow); SIP spoofing \\
+Media / Transport & Media transport weakness (37); RTP flooding / denial of service (10); Media protection / downgrade weakness (5) & 12.5\% & CVE-2017-14099 (RTP injection); SIP flooding \\
+Web / Backend / API & Web/backend weakness (26); Cross-site scripting (9); File upload / remote code execution (6) & 10.6\% & CVE-2020-24807 (RCE upload), CVE-2019-17426 (NoSQLi), CVE-2025-62613 (XSS) \\
+Client / Browser & Client/browser weakness (78); Permission reuse / device access abuse (6); Browser-side trust boundary weakness (3) & 21.0\% & CVE-2019-11748 (Firefox permission abuse) \\
+\bottomrule
+\end{tabular}
+\caption{Distribution of relevant NVD CVEs across the macro-areas represented in RTC-Attack Lab. The percentages are computed over the filtered RTC-related CVEs returned by the keyword-based NVD query window (2021-03-08 to 2026-03-08).}\label{tab:nvd-macro-area-coverage}
+\end{table}

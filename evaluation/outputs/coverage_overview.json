@@ -1,0 +1,45 @@
+{
+  "keyword_hits": 886,
+  "relevant_cves": 415,
+  "supported_relevant_cves": 406,
+  "unmapped_relevant_cves": 9,
+  "supported_macro_area_coverage_pct": 97.8,
+  "excluded_cves": 471,
+  "macro_areas": [
+    {
+      "macro_area": "Relay / Traversal",
+      "top_subcategories": "Traversal / relay weakness (24); Relay denial of service (6); Access control bypass / internal reachability (5)",
+      "num_cves": 35,
+      "pct_of_filtered_cves": "8.4",
+      "representative_rtc_attack_lab_scenario": "CVE-2020-26262 (coTURN bypass)"
+    },
+    {
+      "macro_area": "Signaling / Parser",
+      "top_subcategories": "Flooding / denial of service (70); Signaling weakness (58); Parser overflow / memory corruption (48)",
+      "num_cves": 188,
+      "pct_of_filtered_cves": "45.3",
+      "representative_rtc_attack_lab_scenario": "CVE-2018-8828 (Kamailio overflow); SIP spoofing"
+    },
+    {
+      "macro_area": "Media / Transport",
+      "top_subcategories": "Media transport weakness (37); RTP flooding / denial of service (10); Media protection / downgrade weakness (5)",
+      "num_cves": 52,
+      "pct_of_filtered_cves": "12.5",
+      "representative_rtc_attack_lab_scenario": "CVE-2017-14099 (RTP injection); SIP flooding"
+    },
+    {
+      "macro_area": "Web / Backend / API",
+      "top_subcategories": "Web/backend weakness (26); Cross-site scripting (9); File upload / remote code execution (6)",
+      "num_cves": 44,
+      "pct_of_filtered_cves": "10.6",
+      "representative_rtc_attack_lab_scenario": "CVE-2020-24807 (RCE upload), CVE-2019-17426 (NoSQLi), CVE-2025-62613 (XSS)"
+    },
+    {
+      "macro_area": "Client / Browser",
+      "top_subcategories": "Client/browser weakness (78); Permission reuse / device access abuse (6); Browser-side trust boundary weakness (3)",
+      "num_cves": 87,
+      "pct_of_filtered_cves": "21.0",
+      "representative_rtc_attack_lab_scenario": "CVE-2019-11748 (Firefox permission abuse)"
+    }
+  ]
+}
